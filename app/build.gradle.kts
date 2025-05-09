@@ -47,10 +47,18 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:${ktorVersion}")
     implementation("io.ktor:ktor-server-content-negotiation:${ktorVersion}")
     implementation("io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}")
+    implementation("io.ktor:ktor-serialization-jackson:${ktorVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     // logger
     implementation("ch.qos.logback:logback-classic:${logbackVersion}")
+
+    // sqlite3
+    implementation("org.xerial:sqlite-jdbc:3.48.0.0")
+
+    // database connection
+//    implementation("org.jdbi:jdbi3-core:3.48.0")
+    implementation("com.github.seratch:kotliquery:1.9.1")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

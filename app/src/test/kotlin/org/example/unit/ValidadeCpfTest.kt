@@ -1,7 +1,7 @@
-package org.example
+package org.example.unit
 
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.example.validateCpf
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -18,7 +18,7 @@ class ValidadeCpfTest {
     ])
     fun `Deve validar o cpf`(cpf: String) {
         val isValid = validateCpf(cpf)
-        assertTrue(isValid)
+        Assertions.assertTrue(isValid)
     }
 
     @ParameterizedTest(name = "Não deve validar o cpf {0}")
@@ -31,6 +31,6 @@ class ValidadeCpfTest {
     ])
     fun `Não deve validar o cpf`(cpf: String) {
         val isValid = validateCpf(cpf)
-        assertFalse(isValid)
+        Assertions.assertFalse(isValid)
     }
 }
