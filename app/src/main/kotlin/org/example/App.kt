@@ -73,17 +73,7 @@ fun isValidEmail(email: String): Boolean {
     return emailRegex.matches(email)
 }
 
-fun isValidPassword(password: String): Boolean {
-    if (password.length < 8) return false
-    if (!Regex(".*\\d.*").containsMatchIn(password)) return false
-    if (!Regex(".*[a-z].*").containsMatchIn(password)) return false
-    if (!Regex(".*[A-Z].*").containsMatchIn(password)) return false
-    return true
-}
-
 fun main() {
-    val accounts = mutableListOf<Account>()
-
     val dataSource: DataSource = SQLiteDataSource().apply {
         url = "jdbc:sqlite:database.db"
     }
@@ -92,9 +82,6 @@ fun main() {
     embeddedServer(CIO, port = 3000) {
         install(ContentNegotiation) {
             json()
-//            jackson {
-//                enable(SerializationFeature.INDENT_OUTPUT)
-//            }
         }
         routing {
             post("/signup") {
