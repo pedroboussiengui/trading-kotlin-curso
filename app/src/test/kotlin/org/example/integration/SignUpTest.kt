@@ -1,14 +1,33 @@
 package org.example.integration
 
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import org.example.Account
-import org.example.getAccountById
-import org.example.signup
+import org.example.AccountDAODatabase
+import org.example.AccountDAOMemory
+import org.example.GetAccount
+import org.example.SignUp
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 // teste de integração no nivel mais baixo
 class SignUpTest {
+
+    lateinit var signup: SignUp
+    lateinit var getAccount: GetAccount
+
+    @BeforeEach
+    fun setup() {
+        val accountDAO = AccountDAODatabase()
+//        val accountDAO = AccountDAOMemory()
+        signup = SignUp(accountDAO)
+        getAccount = GetAccount(accountDAO)
+
+    }
 
     @Test
     fun `deve criar um conta válida`() {
@@ -18,9 +37,9 @@ class SignUpTest {
             document = "97456321558",
             password = "asdQWE123"
         )
-        val outputSignup = signup(inputSignup)
+        val outputSignup = signup.execute(inputSignup)
         Assertions.assertNotNull(outputSignup.accountId)
-        val outputGet = getAccountById(outputSignup.accountId!!)!!
+        val outputGet = getAccount.execute(outputSignup.accountId!!)!!
         Assertions.assertEquals(inputSignup.name, outputGet.name)
         Assertions.assertEquals(inputSignup.email, outputGet.email)
         Assertions.assertEquals(inputSignup.document, outputGet.document)
@@ -35,7 +54,7 @@ class SignUpTest {
             password = "asdQWE123"
         )
         val exception = assertThrows<Exception> {
-            signup(inputSignup)
+            signup.execute(inputSignup)
         }
         Assertions.assertEquals("Invalid name", exception.message)
     }
@@ -49,7 +68,7 @@ class SignUpTest {
             password = "asdQWE123"
         )
         val exception = assertThrows<Exception> {
-            signup(inputSignup)
+            signup.execute(inputSignup)
         }
         Assertions.assertEquals("Invalid email", exception.message)
     }
@@ -63,7 +82,7 @@ class SignUpTest {
             password = "asdQWE123"
         )
         val exception = assertThrows<Exception> {
-            signup(inputSignup)
+            signup.execute(inputSignup)
         }
         Assertions.assertEquals("Invalid document", exception.message)
     }
@@ -77,8 +96,98 @@ class SignUpTest {
             password = "asdQWE"
         )
         val exception = assertThrows<Exception> {
-            signup(inputSignup)
+            signup.execute(inputSignup)
         }
         Assertions.assertEquals("Invalid password", exception.message)
+    }
+
+    /**
+      * Sobrescrever um comportmento com algo fixo
+     */
+    @Test
+    fun `deve criar um conta válida com stub`() {
+        val accountStub = mockk<AccountDAODatabase>()
+        // stub para saveAccount, não faz nada
+        every { accountStub.saveAccount(any()) } returns Unit
+        val inputSignup = Account(
+            name = "John Doe",
+            email = "john.doe@gmail.com",
+            document = "97456321558",
+            password = "asdQWE123"
+        )
+        // Stub para getAccountById - retorna o inputSignup quando chamado com qualquer argument
+        every { accountStub.getAccountById(any()) } returns inputSignup
+        // Stub para getAccountAssets - retorna lista vazia
+        every { accountStub.getAccountAssets(any()) } returns emptyList()
+        val outputSignup = signup.execute(inputSignup)
+        Assertions.assertNotNull(outputSignup.accountId)
+        val outputGet = getAccount.execute(outputSignup.accountId!!)!!
+        Assertions.assertEquals(inputSignup.name, outputGet.name)
+        Assertions.assertEquals(inputSignup.email, outputGet.email)
+        Assertions.assertEquals(inputSignup.document, outputGet.document)
+    }
+
+    /**
+     * Quando eu quero se algo foi chamado e como foi chamado
+     * ele acessa o serviço real, nesse caso o banco
+     */
+    @Test
+    fun `deve criar um conta válida com spy`() {
+        val accountSpy = spyk<AccountDAODatabase>()
+        signup = SignUp(accountSpy)
+        getAccount = GetAccount(accountSpy)
+        val inputSignup = Account(
+            name = "John Doe",
+            email = "john.doe@gmail.com",
+            document = "97456321558",
+            password = "asdQWE123"
+        )
+        val outputSignup = signup.execute(inputSignup)
+        Assertions.assertNotNull(outputSignup.accountId)
+        val outputGet = getAccount.execute(outputSignup.accountId!!)!!
+        Assertions.assertEquals(inputSignup.name, outputGet.name)
+        Assertions.assertEquals(inputSignup.email, outputGet.email)
+        Assertions.assertEquals(inputSignup.document, outputGet.document)
+
+        verify(exactly = 1) {
+            accountSpy.saveAccount(
+                match { savedAccount ->
+                    savedAccount.name == inputSignup.name &&
+                    savedAccount.email == inputSignup.email &&
+                    savedAccount.document == inputSignup.document &&
+                    savedAccount.accountId == outputSignup.accountId
+                }
+            )
+        }
+    }
+
+    /**
+     *
+     */
+    @Test
+    fun `deve criar um conta válida com mock`() {
+        val accountMock = mockk<AccountDAODatabase>()
+        val inputSignup = Account(
+            name = "John Doe",
+            email = "john.doe@gmail.com",
+            document = "97456321558",
+            password = "asdQWE123"
+        )
+        every { accountMock.saveAccount(any()) } returns Unit
+        every { accountMock.getAccountById(any()) } returns inputSignup
+        every { accountMock.getAccountAssets(any()) } returns emptyList()
+        signup = SignUp(accountMock)       // Usa o mock
+        getAccount = GetAccount(accountMock) // Usa o mock
+
+        val outputSignup = signup.execute(inputSignup)
+        Assertions.assertNotNull(outputSignup.accountId)
+        val outputGet = getAccount.execute(outputSignup.accountId!!)!!
+        Assertions.assertEquals(inputSignup.name, outputGet.name)
+        Assertions.assertEquals(inputSignup.email, outputGet.email)
+        Assertions.assertEquals(inputSignup.document, outputGet.document)
+
+        verify(exactly = 1) { accountMock.saveAccount(any()) }
+        verify(exactly = 1) { accountMock.getAccountById(any()) }
+        verify(exactly = 1) { accountMock.getAccountAssets(any()) }
     }
 }

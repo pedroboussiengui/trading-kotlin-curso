@@ -29,6 +29,8 @@ val logbackVersion = "1.5.16"
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
+    // mock, stub e spy
+    testImplementation("io.mockk:mockk:1.13.17")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

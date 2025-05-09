@@ -11,6 +11,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun main() {
+
+    val accountDAO = AccountDAODatabase()
+    val signup = SignUp(accountDAO)
+    val getAccount = GetAccount(accountDAO)
+
     embeddedServer(CIO, port = 3000) {
         install(ContentNegotiation) {
             json()
@@ -19,7 +24,7 @@ fun main() {
             post("/signup") {
                 try {
                     val input = call.receive<Account>()
-                    val output = signup(input)
+                    val output = signup.execute(input)
                     call.respond(HttpStatusCode.Created, output)
                 } catch (e: Exception) {
                     call.respond(
@@ -59,7 +64,7 @@ fun main() {
             }
             get("/accounts/{accountId}") {
                 val accountId = call.parameters["accountId"]
-                val output = getAccount(accountId!!)
+                val output = getAccount.execute(accountId!!)
                 if (output != null) {
                     call.respond(output)
                 } else {

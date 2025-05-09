@@ -51,32 +51,32 @@ data class Order(
     val timestamp: String? = null
 )
 
-fun isValidName(name: String): Boolean {
-    return name.split(" ").size == 2
-}
-
-fun isValidEmail(email: String): Boolean {
-    val emailRegex = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
-    return emailRegex.matches(email)
-}
-
-fun signup(input: Account): Account {
-    if (!isValidName(input.name)) {
-        throw Exception("Invalid name")
-    }
-    if (!isValidEmail(input.email)) {
-        throw Exception("Invalid email")
-    }
-    if (!isValidPassword(input.password!!)) {
-        throw Exception("Invalid password")
-    }
-    if (!validateCpf(input.document)) {
-        throw Exception("Invalid document")
-    }
-    val account = input.copy(accountId = UUID.randomUUID().toString())
-    saveAccount(account)
-    return account
-}
+//fun isValidName(name: String): Boolean {
+//    return name.split(" ").size == 2
+//}
+//
+//fun isValidEmail(email: String): Boolean {
+//    val emailRegex = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
+//    return emailRegex.matches(email)
+//}
+//
+//fun signup(input: Account): Account {
+//    if (!isValidName(input.name)) {
+//        throw Exception("Invalid name")
+//    }
+//    if (!isValidEmail(input.email)) {
+//        throw Exception("Invalid email")
+//    }
+//    if (!isValidPassword(input.password!!)) {
+//        throw Exception("Invalid password")
+//    }
+//    if (!validateCpf(input.document)) {
+//        throw Exception("Invalid document")
+//    }
+//    val account = input.copy(accountId = UUID.randomUUID().toString())
+//    saveAccount(account)
+//    return account
+//}
 
 fun deposit(input: Deposit) {
     saveAccountAsset(input)
@@ -103,11 +103,11 @@ fun getOrder(orderId: String): Order? {
     return order
 }
 
-fun getAccount(accountId: String): Account? {
-    val account = getAccountById(accountId)
-    val assets = getAccountAssets(accountId)
-    for (asset in assets) {
-        account?.assets?.add(asset)
-    }
-    return account
-}
+//fun getAccount(accountId: String): Account? {
+//    val account = getAccountById(accountId)
+//    val assets = getAccountAssets(accountId)
+//    for (asset in assets) {
+//        account?.assets?.add(asset)
+//    }
+//    return account
+//}
