@@ -13,8 +13,13 @@ import io.ktor.server.routing.*
 fun main() {
 
     val accountDAO = AccountDAODatabase()
+    val orderDAO = OrderDAODatabase()
     val signup = SignUp(accountDAO)
     val getAccount = GetAccount(accountDAO)
+    val withdraw = WithDraw(accountDAO)
+    val deposit = DepositUC(accountDAO)
+    val placeOrder = PlaceOrder(orderDAO)
+    val getOrder = GetOrder(orderDAO)
 
     embeddedServer(CIO, port = 3000) {
         install(ContentNegotiation) {
@@ -35,12 +40,12 @@ fun main() {
             }
             post("/deposit") {
                 val input = call.receive<Deposit>()
-                deposit(input)
+                deposit.execute(input)
             }
             post("/withdraw") {
                 try {
                     val input = call.receive<Withdraw>()
-                    withdraw(input)
+                    withdraw.execute(input)
                 } catch (e: Exception) {
                     call.respond(
                         HttpStatusCode.UnprocessableEntity,
@@ -50,12 +55,12 @@ fun main() {
             }
             post("/place_order") {
                 val input = call.receive<Order>()
-                val output = placeOrder(input)
+                val output = placeOrder.execute(input)
                 call.respond(output)
             }
             get("/orders/{orderId}") {
                 val orderId = call.parameters["orderId"]
-                val output = getOrder(orderId!!)
+                val output = getOrder.execute(orderId!!)
                 if (output != null) {
                     call.respond(output)
                 } else {

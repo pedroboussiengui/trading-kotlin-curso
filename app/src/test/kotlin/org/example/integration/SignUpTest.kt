@@ -162,7 +162,7 @@ class SignUpTest {
     }
 
     /**
-     *
+     * mocka um objeto inteiro
      */
     @Test
     fun `deve criar um conta válida com mock`() {

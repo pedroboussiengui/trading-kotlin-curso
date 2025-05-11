@@ -78,30 +78,30 @@ data class Order(
 //    return account
 //}
 
-fun deposit(input: Deposit) {
-    saveAccountAsset(input)
-}
+//fun deposit(input: Deposit) {
+//    saveAccountAsset(input)
+//}
 
-fun withdraw(input: Withdraw) {
-    val accountAssetData = getAccountAsset(input.accountId, input.assetId)
-    val currentQuantity = accountAssetData?.quantity
-    if (accountAssetData == null || currentQuantity!! < input.quantity) {
-        throw Exception("Insufficient funds")
-    }
-    val quantity = currentQuantity - input.quantity
-    updateAccountAsset(quantity, input.accountId, input.assetId)
-}
+//fun withdraw(input: Withdraw) {
+//    val accountAssetData = getAccountAsset(input.accountId, input.assetId)
+//    val currentQuantity = accountAssetData?.quantity
+//    if (accountAssetData == null || currentQuantity!! < input.quantity) {
+//        throw Exception("Insufficient funds")
+//    }
+//    val quantity = currentQuantity - input.quantity
+//    updateAccountAsset(quantity, input.accountId, input.assetId)
+//}
 
-fun placeOrder(input: Order): Order {
-    val order = input.copy(orderId = UUID.randomUUID().toString(), status = "open", timestamp = LocalDate.now().toString())
-    saveOrder(order)
-    return order
-}
-
-fun getOrder(orderId: String): Order? {
-    val order = getOrderById(orderId)
-    return order
-}
+//fun placeOrder(input: Order): Order {
+//    val order = input.copy(orderId = UUID.randomUUID().toString(), status = "open", timestamp = LocalDate.now().toString())
+//    saveOrder(order)
+//    return order
+//}
+//
+//fun getOrder(orderId: String): Order? {
+//    val order = getOrderById(orderId)
+//    return order
+//}
 
 //fun getAccount(accountId: String): Account? {
 //    val account = getAccountById(accountId)
