@@ -1,18 +1,33 @@
 package org.example
 
-import java.time.LocalDate
-import java.util.UUID
+import kotlinx.serialization.Serializable
 
 class PlaceOrder(
-    val orderDAO: OrderDAO
+    val orderRepository: OrderRepository
 ) {
-    fun execute(input: Order): Order {
-        val order = input.copy(
-            orderId = UUID.randomUUID().toString(),
-            status = "open",
-            timestamp = LocalDate.now().toString()
+    fun execute(input: OrderInput): OrderOutput {
+        val order = Order.create(
+            input.marketId,
+            input.accountId,
+            input.side,
+            input.quantity,
+            input.price
         )
-        orderDAO.saveOrder(order)
-        return order
+        orderRepository.saveOrder(order)
+        return OrderOutput(order.orderId)
     }
 }
+
+@Serializable
+data class OrderInput(
+    val marketId: String,
+    val accountId: String,
+    val side: String,
+    val quantity: Int,
+    val price: Int
+)
+
+@Serializable
+data class OrderOutput(
+    val orderId: String
+)

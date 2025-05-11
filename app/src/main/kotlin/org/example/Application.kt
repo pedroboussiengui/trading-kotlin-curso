@@ -36,15 +36,3 @@ import kotlinx.serialization.Serializable
 data class ErrorResponse(
     val error: String
 )
-
-@Serializable
-data class Order(
-    val orderId: String? = null,
-    val marketId: String,
-    val accountId: String,
-    val side: String,
-    val quantity: Int,
-    val price: Int,
-    val status: String? = null,
-    val timestamp: String? = null
-)

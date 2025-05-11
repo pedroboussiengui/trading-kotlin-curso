@@ -29,6 +29,11 @@ class SignUpTest {
 
     }
 
+    /**
+     * Apenas um caso de sucesso e um caso de fracasso
+     * sao testados a nivel teste de integração
+     */
+
     @Test
     fun `deve criar um conta válida`() {
         val inputSignup = AccountInput(
@@ -59,47 +64,51 @@ class SignUpTest {
         Assertions.assertEquals("Invalid name", exception.message)
     }
 
-    @Test
-    fun `não deve criar um conta com um email inválido`() {
-        val inputSignup = AccountInput(
-            name = "John Doe",
-            email = "john.doe",
-            document = "97456321558",
-            password = "asdQWE123"
-        )
-        val exception = assertThrows<Exception> {
-            signup.execute(inputSignup)
-        }
-        Assertions.assertEquals("Invalid email", exception.message)
-    }
-
-    @Test
-    fun `não deve criar um conta com um documeno inválido`() {
-        val inputSignup = AccountInput(
-            name = "John Doe",
-            email = "john.doe@gmail.com",
-            document = "974563215",
-            password = "asdQWE123"
-        )
-        val exception = assertThrows<Exception> {
-            signup.execute(inputSignup)
-        }
-        Assertions.assertEquals("Invalid document", exception.message)
-    }
-
-    @Test
-    fun `não deve criar um conta com uma senha inválida`() {
-        val inputSignup = AccountInput(
-            name = "John Doe",
-            email = "john.doe@gmail.com",
-            document = "974563215",
-            password = "asdQWE"
-        )
-        val exception = assertThrows<Exception> {
-            signup.execute(inputSignup)
-        }
-        Assertions.assertEquals("Invalid password", exception.message)
-    }
+    /**
+     * Testes não necessários, porque esses casos excepcionais devem ser testados
+     * as nivel de unidade
+     */
+//    @Test
+//    fun `não deve criar um conta com um email inválido`() {
+//        val inputSignup = AccountInput(
+//            name = "John Doe",
+//            email = "john.doe",
+//            document = "97456321558",
+//            password = "asdQWE123"
+//        )
+//        val exception = assertThrows<Exception> {
+//            signup.execute(inputSignup)
+//        }
+//        Assertions.assertEquals("Invalid email", exception.message)
+//    }
+//
+//    @Test
+//    fun `não deve criar um conta com um documeno inválido`() {
+//        val inputSignup = AccountInput(
+//            name = "John Doe",
+//            email = "john.doe@gmail.com",
+//            document = "974563215",
+//            password = "asdQWE123"
+//        )
+//        val exception = assertThrows<Exception> {
+//            signup.execute(inputSignup)
+//        }
+//        Assertions.assertEquals("Invalid document", exception.message)
+//    }
+//
+//    @Test
+//    fun `não deve criar um conta com uma senha inválida`() {
+//        val inputSignup = AccountInput(
+//            name = "John Doe",
+//            email = "john.doe@gmail.com",
+//            document = "974563215",
+//            password = "asdQWE"
+//        )
+//        val exception = assertThrows<Exception> {
+//            signup.execute(inputSignup)
+//        }
+//        Assertions.assertEquals("Invalid password", exception.message)
+//    }
 
 //    /**
 //      * Sobrescrever um comportmento com algo fixo

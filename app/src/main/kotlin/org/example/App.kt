@@ -13,13 +13,14 @@ import io.ktor.server.routing.*
 fun main() {
 
     val accountRepository = AccountRepositoryDatabase()
-    val orderDAO = OrderDAODatabase()
+    val orderRepository = OrderRepositoryDatabase()
+
     val signup = SignUp(accountRepository)
     val getAccount = GetAccount(accountRepository)
     val withdraw = WithDraw(accountRepository)
     val deposit = Deposit(accountRepository)
-    val placeOrder = PlaceOrder(orderDAO)
-    val getOrder = GetOrder(orderDAO)
+    val placeOrder = PlaceOrder(orderRepository)
+    val getOrder = GetOrder(orderRepository)
 
     embeddedServer(CIO, port = 3000) {
         install(ContentNegotiation) {
@@ -54,17 +55,20 @@ fun main() {
                 }
             }
             post("/place_order") {
-                val input = call.receive<Order>()
-                val output = placeOrder.execute(input)
+                val input = call.receive<OrderInput>()
+                val output: OrderOutput = placeOrder.execute(input)
                 call.respond(output)
             }
             get("/orders/{orderId}") {
-                val orderId = call.parameters["orderId"]
-                val output = getOrder.execute(orderId!!)
-                if (output != null) {
+                try {
+                    val orderId = call.parameters["orderId"]
+                    val output: GetOrderOutput = getOrder.execute(orderId!!)
                     call.respond(output)
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: Exception) {
+                    call.respond(
+                        HttpStatusCode.NotFound,
+                        e.message!!
+                    )
                 }
             }
             get("/accounts/{accountId}") {

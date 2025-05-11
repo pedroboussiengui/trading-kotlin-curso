@@ -5,12 +5,12 @@ import kotliquery.sessionOf
 import org.sqlite.SQLiteDataSource
 import javax.sql.DataSource
 
-interface OrderDAO {
+interface OrderRepository {
     fun saveOrder(order: Order)
     fun getOrderById(orderId: String): Order?
 }
 
-class OrderDAODatabase : OrderDAO {
+class OrderRepositoryDatabase : OrderRepository {
     val dataSource: DataSource = SQLiteDataSource().apply {
         url = "jdbc:sqlite:database.db"
     }
