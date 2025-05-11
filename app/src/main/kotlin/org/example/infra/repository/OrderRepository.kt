@@ -1,23 +1,18 @@
-package org.example
+package org.example.infra.repository
 
+import kotliquery.Session
 import kotliquery.queryOf
-import kotliquery.sessionOf
-import org.sqlite.SQLiteDataSource
-import javax.sql.DataSource
+import org.example.domain.Order
 
 interface OrderRepository {
     fun saveOrder(order: Order)
     fun getOrderById(orderId: String): Order?
 }
 
-class OrderRepositoryDatabase : OrderRepository {
-    val dataSource: DataSource = SQLiteDataSource().apply {
-        url = "jdbc:sqlite:database.db"
-    }
-    val session = sessionOf(dataSource)
+class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
 
     override fun saveOrder(order: Order) {
-        this.session.run(
+        session.run(
             queryOf("INSERT INTO order_tb (order_id, market_id, account_id, side, quantity, price, status, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 order.orderId,
                 order.marketId,
@@ -32,7 +27,7 @@ class OrderRepositoryDatabase : OrderRepository {
     }
 
     override fun getOrderById(orderId: String): Order? {
-        val order = this.session.run(queryOf(
+        val order = session.run(queryOf(
             "SELECT * FROM order_tb WHERE order_id = ?", orderId)
             .map { row ->
                 Order(

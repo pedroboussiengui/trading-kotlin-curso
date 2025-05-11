@@ -1,4 +1,4 @@
-package org.example
+package org.example.infra.http.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -7,6 +7,11 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import org.example.application.usecase.GetOrder
+import org.example.application.usecase.GetOrderOutput
+import org.example.application.usecase.OrderInput
+import org.example.application.usecase.OrderOutput
+import org.example.application.usecase.PlaceOrder
 
 fun Route.orderRoutes(
     placeOrder: PlaceOrder,

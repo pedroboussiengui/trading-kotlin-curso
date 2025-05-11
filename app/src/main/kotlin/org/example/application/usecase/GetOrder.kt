@@ -1,6 +1,7 @@
-package org.example
+package org.example.application.usecase
 
 import kotlinx.serialization.Serializable
+import org.example.infra.repository.OrderRepository
 
 class GetOrder(
     val orderRepository: OrderRepository

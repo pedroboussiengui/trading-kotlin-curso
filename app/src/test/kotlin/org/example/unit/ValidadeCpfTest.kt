@@ -1,6 +1,6 @@
 package org.example.unit
 
-import org.example.validateCpf
+import org.example.domain.validateCpf
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest

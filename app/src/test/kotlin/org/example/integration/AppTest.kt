@@ -10,9 +10,16 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import org.example.*
+import org.example.application.usecase.AccountInput
+import org.example.application.usecase.DepositInput
+import org.example.application.usecase.GetAccountOutput
+import org.example.application.usecase.GetOrderOutput
+import org.example.application.usecase.OrderInput
+import org.example.application.usecase.OrderOutput
+import org.example.application.usecase.SignupOutput
+import org.example.application.usecase.WithDrawInput
+import org.example.infra.http.routes.ErrorResponse
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class AppTest {

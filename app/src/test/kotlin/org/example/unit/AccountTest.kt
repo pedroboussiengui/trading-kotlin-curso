@@ -1,6 +1,6 @@
 package org.example.unit
 
-import org.example.Account
+import org.example.domain.Account
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

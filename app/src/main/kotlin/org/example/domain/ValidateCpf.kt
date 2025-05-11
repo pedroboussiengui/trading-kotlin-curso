@@ -1,4 +1,4 @@
-package org.example
+package org.example.domain
 
 fun validateCpf(cpf: String): Boolean {
     if (cpf.isEmpty()) return false

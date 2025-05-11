@@ -1,6 +1,7 @@
-package org.example
+package org.example.application.usecase
 
 import kotlinx.serialization.Serializable
+import org.example.infra.repository.AccountRepository
 
 class GetAccount(
     val accountRepository: AccountRepository

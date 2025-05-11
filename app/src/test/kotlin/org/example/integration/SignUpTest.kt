@@ -1,18 +1,17 @@
 package org.example.integration
 
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.spyk
-import io.mockk.verify
-import org.example.AccountInput
-import org.example.AccountRepositoryDatabase
-import org.example.GetAccount
-import org.example.SignUp
-import org.example.SignupOutput
+import kotliquery.sessionOf
+import org.example.application.usecase.AccountInput
+import org.example.infra.repository.AccountRepositoryDatabase
+import org.example.application.usecase.GetAccount
+import org.example.application.usecase.SignUp
+import org.example.application.usecase.SignupOutput
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.sqlite.SQLiteDataSource
+import javax.sql.DataSource
 
 // teste de integração no nivel mais baixo
 class SignUpTest {
@@ -22,7 +21,11 @@ class SignUpTest {
 
     @BeforeEach
     fun setup() {
-        val accountDAO = AccountRepositoryDatabase()
+        val dataSource: DataSource = SQLiteDataSource().apply {
+            url = "jdbc:sqlite:database.db"
+        }
+        val session = sessionOf(dataSource)
+        val accountDAO = AccountRepositoryDatabase(session)
 //        val accountDAO = AccountDAOMemory()
         signup = SignUp(accountDAO)
         getAccount = GetAccount(accountDAO)

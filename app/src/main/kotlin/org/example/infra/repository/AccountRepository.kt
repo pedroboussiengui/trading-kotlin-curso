@@ -1,9 +1,9 @@
-package org.example
+package org.example.infra.repository
 
+import kotliquery.Session
 import kotliquery.queryOf
-import kotliquery.sessionOf
-import org.sqlite.SQLiteDataSource
-import javax.sql.DataSource
+import org.example.domain.Account
+import org.example.domain.AccountAsset
 
 interface AccountRepository {
     fun saveAccount(account: Account)
@@ -14,22 +14,17 @@ interface AccountRepository {
     fun saveAccountAsset(accountAsset: AccountAsset)
 }
 
-class AccountRepositoryDatabase : AccountRepository {
-
-    val dataSource: DataSource = SQLiteDataSource().apply {
-        url = "jdbc:sqlite:database.db"
-    }
-    val session = sessionOf(dataSource)
+class AccountRepositoryDatabase(private val session: Session) : AccountRepository {
 
     override fun saveAccount(account: Account) {
-        this.session.run(
+        session.run(
             queryOf("INSERT INTO account (account_id, name, email, document, password) VALUES (?, ?, ?, ?, ?)",
                 account.accountId, account.name, account.email, account.document, account.password).asUpdate
         )
     }
 
     override fun getAccountById(accountId: String): Account? {
-        val account = this.session.run(queryOf(
+        val account = session.run(queryOf(
             "SELECT * FROM account WHERE account_id = ?", accountId)
             .map { row ->
                 Account(
@@ -45,7 +40,7 @@ class AccountRepositoryDatabase : AccountRepository {
     }
 
     override fun getAccountAssets(accountId: String): List<AccountAsset> {
-        val assets = this.session.run(queryOf(
+        val assets = session.run(queryOf(
             "SELECT * FROM account_asset WHERE account_id = ?", accountId)
             .map { row ->
                 AccountAsset(
@@ -59,7 +54,7 @@ class AccountRepositoryDatabase : AccountRepository {
     }
 
     override fun getAccountAsset(accountId: String, assetId: String): AccountAsset {
-        val accountAssetData = this.session.run(queryOf(
+        val accountAssetData = session.run(queryOf(
             "SELECT * FROM account_asset WHERE account_id = ? and asset_id = ?", accountId, assetId)
             .map { row ->
                 AccountAsset(
@@ -76,14 +71,14 @@ class AccountRepositoryDatabase : AccountRepository {
     }
 
     override fun updateAccountAsset(accountAsset: AccountAsset) {
-        this.session.run(
+        session.run(
             queryOf("UPDATE account_asset SET quantity = ? WHERE account_id = ? and asset_id = ?",
                 accountAsset.getQuantity(), accountAsset.accountId, accountAsset.assetId).asUpdate
         )
     }
 
     override fun saveAccountAsset(accountAsset: AccountAsset) {
-        this.session.run(
+        session.run(
             queryOf("INSERT INTO account_asset (account_id, asset_id, quantity) VALUES (?, ?, ?)",
                 accountAsset.accountId, accountAsset.assetId, accountAsset.getQuantity()).asUpdate
         )

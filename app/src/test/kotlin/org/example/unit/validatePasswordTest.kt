@@ -1,6 +1,6 @@
 package org.example.unit
 
-import org.example.isValidPassword
+import org.example.domain.isValidPassword
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

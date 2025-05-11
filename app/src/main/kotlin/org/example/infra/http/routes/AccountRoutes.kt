@@ -1,4 +1,4 @@
-package org.example
+package org.example.infra.http.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -7,6 +7,21 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import kotlinx.serialization.Serializable
+import org.example.application.usecase.AccountInput
+import org.example.application.usecase.Deposit
+import org.example.application.usecase.DepositInput
+import org.example.application.usecase.GetAccount
+import org.example.application.usecase.GetAccountOutput
+import org.example.application.usecase.SignUp
+import org.example.application.usecase.SignupOutput
+import org.example.application.usecase.WithDraw
+import org.example.application.usecase.WithDrawInput
+
+@Serializable
+data class ErrorResponse(
+    val error: String
+)
 
 /**
  * É como se fosse um Controller, mas aqui usarei o nome routing

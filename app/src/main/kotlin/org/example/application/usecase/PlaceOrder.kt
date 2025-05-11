@@ -1,12 +1,14 @@
-package org.example
+package org.example.application.usecase
 
 import kotlinx.serialization.Serializable
+import org.example.domain.Order
+import org.example.infra.repository.OrderRepository
 
 class PlaceOrder(
     val orderRepository: OrderRepository
 ) {
     fun execute(input: OrderInput): OrderOutput {
-        val order = Order.create(
+        val order = Order.Companion.create(
             input.marketId,
             input.accountId,
             input.side,
