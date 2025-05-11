@@ -1,34 +1,26 @@
 package org.example
 
-import java.util.UUID
+import kotlinx.serialization.Serializable
 
 class SignUp(
-    val accountDAO: AccountDAO
+    val accountRepository: AccountRepository
 ) {
-    fun isValidName(name: String): Boolean {
-        return name.split(" ").size == 2
-    }
-
-    fun isValidEmail(email: String): Boolean {
-        val emailRegex = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
-        return emailRegex.matches(email)
-    }
-
-    fun execute(input: Account): Account {
-        if (!this.isValidName(input.name)) {
-            throw Exception("Invalid name")
-        }
-        if (!this.isValidEmail(input.email)) {
-            throw Exception("Invalid email")
-        }
-        if (!isValidPassword(input.password!!)) {
-            throw Exception("Invalid password")
-        }
-        if (!validateCpf(input.document)) {
-            throw Exception("Invalid document")
-        }
-        val account = input.copy(accountId = UUID.randomUUID().toString())
-        accountDAO.saveAccount(account)
-        return account
+    fun execute(input: AccountInput): SignupOutput {
+        val account = Account.create(input.name, input.email, input.document, input.password)
+        accountRepository.saveAccount(account)
+        return SignupOutput(account.accountId)
     }
 }
+
+@Serializable
+data class AccountInput(
+    val name: String,
+    val email: String,
+    val document: String,
+    val password: String,
+)
+
+@Serializable
+data class SignupOutput(
+    val accountId: String
+)

@@ -1,15 +1,20 @@
 package org.example
 
+import kotlinx.serialization.Serializable
+
 class WithDraw(
-    val accountDAO: AccountDAO
+    val accountRepository: AccountRepository
 ) {
-    fun execute(input: Withdraw) {
-        val accountAssetData = accountDAO.getAccountAsset(input.accountId, input.assetId)
-        val currentQuantity = accountAssetData?.quantity
-        if (accountAssetData == null || currentQuantity!! < input.quantity) {
-            throw Exception("Insufficient funds")
-        }
-        val quantity = currentQuantity - input.quantity
-        accountDAO.updateAccountAsset(quantity, input.accountId, input.assetId)
+    fun execute(input: WithDrawInput) {
+        val accountAsset: AccountAsset = accountRepository.getAccountAsset(input.accountId, input.assetId)
+        accountAsset.withdraw(input.quantity)
+        accountRepository.updateAccountAsset(accountAsset)
     }
 }
+
+@Serializable
+data class WithDrawInput(
+    val accountId: String,
+    val assetId: String,
+    val quantity: Int
+)

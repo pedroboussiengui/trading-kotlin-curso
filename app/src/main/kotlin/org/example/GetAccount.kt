@@ -1,14 +1,40 @@
 package org.example
 
+import kotlinx.serialization.Serializable
+
 class GetAccount(
-    val accountDAO: AccountDAO
+    val accountRepository: AccountRepository
 ) {
-    fun execute(accountId: String): Account? {
-        val account = accountDAO.getAccountById(accountId)
-        val assets = accountDAO.getAccountAssets(accountId)
-        for (asset in assets) {
-            account?.assets?.add(asset)
+    fun execute(accountId: String): GetAccountOutput {
+        val account = accountRepository.getAccountById(accountId)
+        if (account == null) {
+            throw Exception("Account not found")
         }
-        return account
+        val assets = accountRepository.getAccountAssets(accountId)
+        val output = GetAccountOutput(
+            account.accountId,
+            account.name,
+            account.email,
+            account.document,
+            account.password,
+            assets.map { GetAccountOutput.Asset(it.assetId, it.getQuantity()) }.toMutableList()
+        )
+        return output
     }
+}
+
+@Serializable
+data class GetAccountOutput (
+    val accountId: String,
+    val name: String,
+    val email: String,
+    val document: String,
+    val password: String,
+    val assets: MutableList<Asset> = mutableListOf()
+) {
+    @Serializable
+    data class Asset(
+        val assetId: String,
+        val quantity: Int
+    )
 }

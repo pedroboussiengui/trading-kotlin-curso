@@ -24,7 +24,7 @@ class AppTest {
 
     @Test
     fun `deve criar um conta válida`() = runBlocking {
-        val inputSignup = Account(
+        val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
             document = "97456321558",
@@ -34,11 +34,11 @@ class AppTest {
             contentType(ContentType.Application.Json)
             setBody(inputSignup)
         }
-        val outputSignup = responseSignup.body<Account>()
+        val outputSignup: SignupOutput = responseSignup.body<SignupOutput>()
         Assertions.assertNotNull(outputSignup.accountId)
 
         val responseGet = client.get("http://localhost:3000/accounts/${outputSignup.accountId}")
-        val outputGet = responseGet.body<Account>()
+        val outputGet = responseGet.body<AccountInput>()
 
         Assertions.assertEquals(inputSignup.name, outputGet.name)
         Assertions.assertEquals(inputSignup.email, outputGet.email)
@@ -47,7 +47,7 @@ class AppTest {
 
     @Test
     fun `não deve criar uma conta com nome inválido`() = runBlocking {
-        val inputSignup = Account(
+        val inputSignup = AccountInput(
             name = "John",
             email = "john.doe@gmail.com",
             document = "97456321558",
@@ -98,7 +98,7 @@ class AppTest {
 
     @Test
     fun `deve fazer um deposito`() = runBlocking {
-        val inputSignup = Account(
+        val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
             document = "97456321558",
@@ -108,9 +108,9 @@ class AppTest {
             contentType(ContentType.Application.Json)
             setBody(inputSignup)
         }
-        val outputSignup = responseSignup.body<Account>()
-        val inputDeposit = Deposit(
-            accountId = outputSignup.accountId!!,
+        val outputSignup = responseSignup.body<SignupOutput>()
+        val inputDeposit = DepositInput(
+            accountId = outputSignup.accountId,
             assetId = "BTC/USD",
             quantity = 10
         )
@@ -119,7 +119,7 @@ class AppTest {
             setBody(inputDeposit)
         }
         val responseGetAccount = client.get("http://localhost:3000/accounts/${outputSignup.accountId}")
-        val outputGetAccount = responseGetAccount.body<Account>()
+        val outputGetAccount = responseGetAccount.body<GetAccountOutput>()
         Assertions.assertEquals(1, outputGetAccount.assets.size)
         Assertions.assertEquals("BTC/USD", outputGetAccount.assets[0].assetId)
         Assertions.assertEquals(10, outputGetAccount.assets[0].quantity)
@@ -127,7 +127,7 @@ class AppTest {
 
     @Test
     fun `deve fazer um saque`() = runBlocking {
-        val inputSignup = Account(
+        val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
             document = "97456321558",
@@ -137,9 +137,9 @@ class AppTest {
             contentType(ContentType.Application.Json)
             setBody(inputSignup)
         }
-        val outputSignup = responseSignup.body<Account>()
-        val inputDeposit = Deposit(
-            accountId = outputSignup.accountId!!,
+        val outputSignup = responseSignup.body<SignupOutput>()
+        val inputDeposit = DepositInput(
+            accountId = outputSignup.accountId,
             assetId = "BTC/USD",
             quantity = 10
         )
@@ -147,7 +147,7 @@ class AppTest {
             contentType(ContentType.Application.Json)
             setBody(inputDeposit)
         }
-        val inputWithdraw = Withdraw(
+        val inputWithdraw = WithDrawInput(
             accountId = outputSignup.accountId,
             assetId = "BTC/USD",
             quantity = 5
@@ -157,7 +157,7 @@ class AppTest {
             setBody(inputWithdraw)
         }
         val responseGetAccount = client.get("http://localhost:3000/accounts/${outputSignup.accountId}")
-        val outputGetAccount = responseGetAccount.body<Account>()
+        val outputGetAccount = responseGetAccount.body<GetAccountOutput>()
         Assertions.assertEquals(1, outputGetAccount.assets.size)
         Assertions.assertEquals("BTC/USD", outputGetAccount.assets[0].assetId)
         Assertions.assertEquals(5, outputGetAccount.assets[0].quantity)
@@ -165,7 +165,7 @@ class AppTest {
 
     @Test
     fun `não deve fazer um saque quando sem fundos`() = runBlocking {
-        val inputSignup = Account(
+        val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
             document = "97456321558",
@@ -175,9 +175,9 @@ class AppTest {
             contentType(ContentType.Application.Json)
             setBody(inputSignup)
         }
-        val outputSignup = responseSignup.body<Account>()
-        val inputDeposit = Deposit(
-            accountId = outputSignup.accountId!!,
+        val outputSignup = responseSignup.body<SignupOutput>()
+        val inputDeposit = DepositInput(
+            accountId = outputSignup.accountId,
             assetId = "BTC/USD",
             quantity = 5
         )
@@ -185,7 +185,7 @@ class AppTest {
             contentType(ContentType.Application.Json)
             setBody(inputDeposit)
         }
-        val inputWithdraw = Withdraw(
+        val inputWithdraw = WithDrawInput(
             accountId = outputSignup.accountId,
             assetId = "BTC/USD",
             quantity = 10
@@ -201,7 +201,7 @@ class AppTest {
 
     @Test
     fun `deve criar uma ordem de venda`() = runBlocking {
-        val inputSignup = Account(
+        val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
             document = "97456321558",
@@ -211,10 +211,10 @@ class AppTest {
             contentType(ContentType.Application.Json)
             setBody(inputSignup)
         }
-        val outputSignup = responseSignup.body<Account>()
+        val outputSignup = responseSignup.body<SignupOutput>()
         val inputPlaceOrder = Order(
             marketId = "BTC/USD",
-            accountId = outputSignup.accountId!!,
+            accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
             price = 94000

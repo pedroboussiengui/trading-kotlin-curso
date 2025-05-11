@@ -5,16 +5,16 @@ import kotliquery.sessionOf
 import org.sqlite.SQLiteDataSource
 import javax.sql.DataSource
 
-interface AccountDAO {
+interface AccountRepository {
     fun saveAccount(account: Account)
     fun getAccountById(accountId: String): Account?
-    fun getAccountAssets(accountId: String): List<Asset>
-    fun getAccountAsset(accountId: String, assetId: String): Asset?
-    fun updateAccountAsset(quantity: Int, accountId: String, assetId: String)
-    fun saveAccountAsset(accountAsset: Deposit)
+    fun getAccountAssets(accountId: String): List<AccountAsset>
+    fun getAccountAsset(accountId: String, assetId: String): AccountAsset
+    fun updateAccountAsset(accountAsset: AccountAsset)
+    fun saveAccountAsset(accountAsset: AccountAsset)
 }
 
-class AccountDAODatabase : AccountDAO {
+class AccountRepositoryDatabase : AccountRepository {
 
     val dataSource: DataSource = SQLiteDataSource().apply {
         url = "jdbc:sqlite:database.db"
@@ -44,11 +44,12 @@ class AccountDAODatabase : AccountDAO {
         return account
     }
 
-    override fun getAccountAssets(accountId: String): List<Asset> {
+    override fun getAccountAssets(accountId: String): List<AccountAsset> {
         val assets = this.session.run(queryOf(
             "SELECT * FROM account_asset WHERE account_id = ?", accountId)
             .map { row ->
-                Asset(
+                AccountAsset(
+                    row.string("account_id"),
                     row.string("asset_id"),
                     row.int("quantity"),
                 )
@@ -57,35 +58,39 @@ class AccountDAODatabase : AccountDAO {
         return assets
     }
 
-    override fun getAccountAsset(accountId: String, assetId: String): Asset? {
+    override fun getAccountAsset(accountId: String, assetId: String): AccountAsset {
         val accountAssetData = this.session.run(queryOf(
             "SELECT * FROM account_asset WHERE account_id = ? and asset_id = ?", accountId, assetId)
             .map { row ->
-                Asset(
+                AccountAsset(
+                    row.string("account_id"),
                     row.string("asset_id"),
                     row.int("quantity"),
                 )
             }.asSingle
         )
+        if (accountAssetData == null) {
+            throw Exception("Asset not found")
+        }
         return accountAssetData
     }
 
-    override fun updateAccountAsset(quantity: Int, accountId: String, assetId: String) {
+    override fun updateAccountAsset(accountAsset: AccountAsset) {
         this.session.run(
             queryOf("UPDATE account_asset SET quantity = ? WHERE account_id = ? and asset_id = ?",
-                quantity, accountId, assetId).asUpdate
+                accountAsset.getQuantity(), accountAsset.accountId, accountAsset.assetId).asUpdate
         )
     }
 
-    override fun saveAccountAsset(accountAsset: Deposit) {
+    override fun saveAccountAsset(accountAsset: AccountAsset) {
         this.session.run(
             queryOf("INSERT INTO account_asset (account_id, asset_id, quantity) VALUES (?, ?, ?)",
-                accountAsset.accountId, accountAsset.assetId, accountAsset.quantity).asUpdate
+                accountAsset.accountId, accountAsset.assetId, accountAsset.getQuantity()).asUpdate
         )
     }
 }
 
-class AccountDAOMemory : AccountDAO {
+class AccountDAOMemory : AccountRepository {
 
     val accounts = mutableListOf<Account>()
 
@@ -98,19 +103,19 @@ class AccountDAOMemory : AccountDAO {
         return accounts.find { it.accountId == accountId }
     }
 
-    override fun getAccountAssets(accountId: String): List<Asset> {
+    override fun getAccountAssets(accountId: String): List<AccountAsset> {
         return listOf()
     }
 
-    override fun getAccountAsset(accountId: String, assetId: String): Asset? {
+    override fun getAccountAsset(accountId: String, assetId: String): AccountAsset {
         TODO("Not yet implemented")
     }
 
-    override fun updateAccountAsset(quantity: Int, accountId: String, assetId: String) {
+    override fun updateAccountAsset(accountAsset: AccountAsset) {
         TODO("Not yet implemented")
     }
 
-    override fun saveAccountAsset(accountAsset: Deposit) {
+    override fun saveAccountAsset(accountAsset: AccountAsset) {
         TODO("Not yet implemented")
     }
 }

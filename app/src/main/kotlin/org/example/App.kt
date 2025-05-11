@@ -12,12 +12,12 @@ import io.ktor.server.routing.*
 
 fun main() {
 
-    val accountDAO = AccountDAODatabase()
+    val accountRepository = AccountRepositoryDatabase()
     val orderDAO = OrderDAODatabase()
-    val signup = SignUp(accountDAO)
-    val getAccount = GetAccount(accountDAO)
-    val withdraw = WithDraw(accountDAO)
-    val deposit = DepositUC(accountDAO)
+    val signup = SignUp(accountRepository)
+    val getAccount = GetAccount(accountRepository)
+    val withdraw = WithDraw(accountRepository)
+    val deposit = Deposit(accountRepository)
     val placeOrder = PlaceOrder(orderDAO)
     val getOrder = GetOrder(orderDAO)
 
@@ -28,8 +28,8 @@ fun main() {
         routing {
             post("/signup") {
                 try {
-                    val input = call.receive<Account>()
-                    val output = signup.execute(input)
+                    val input = call.receive<AccountInput>()
+                    val output: SignupOutput = signup.execute(input)
                     call.respond(HttpStatusCode.Created, output)
                 } catch (e: Exception) {
                     call.respond(
@@ -39,12 +39,12 @@ fun main() {
                 }
             }
             post("/deposit") {
-                val input = call.receive<Deposit>()
+                val input = call.receive<DepositInput>()
                 deposit.execute(input)
             }
             post("/withdraw") {
                 try {
-                    val input = call.receive<Withdraw>()
+                    val input = call.receive<WithDrawInput>()
                     withdraw.execute(input)
                 } catch (e: Exception) {
                     call.respond(
@@ -68,12 +68,15 @@ fun main() {
                 }
             }
             get("/accounts/{accountId}") {
-                val accountId = call.parameters["accountId"]
-                val output = getAccount.execute(accountId!!)
-                if (output != null) {
+                try {
+                    val accountId = call.parameters["accountId"]
+                    val output: GetAccountOutput = getAccount.execute(accountId!!)
                     call.respond(output)
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
+                } catch (e: Exception) {
+                    call.respond(
+                        HttpStatusCode.NotFound,
+                        e.message!!
+                    )
                 }
             }
         }
