@@ -8,7 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Password validation")
-class ValidadePasswordTest {
+class ValidatePasswordTest {
 
     @Test
     fun `should validate a password`() {
