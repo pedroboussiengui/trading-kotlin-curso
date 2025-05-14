@@ -19,7 +19,9 @@ class GetOrder(
             order.quantity,
             order.price,
             order.status,
-            order.timestamp
+            order.timestamp,
+            order.fillQuantity,
+            order.fillPrice
         )
     }
 }
@@ -33,5 +35,7 @@ data class GetOrderOutput(
     val quantity: Int,
     val price: Int,
     val status: String,
-    val timestamp: String
+    val timestamp: String,
+    val fillQuantity: Int,
+    val fillPrice: Int
 )

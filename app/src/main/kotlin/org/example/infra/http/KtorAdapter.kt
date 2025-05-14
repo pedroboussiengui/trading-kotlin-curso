@@ -8,6 +8,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import org.example.application.usecase.Deposit
 import org.example.application.usecase.GetAccount
+import org.example.application.usecase.GetDepth
 import org.example.application.usecase.GetOrder
 import org.example.application.usecase.PlaceOrder
 import org.example.application.usecase.SignUp
@@ -21,7 +22,8 @@ class KtorAdapter(
     private val withdraw: WithDraw,
     private val getAccount: GetAccount,
     private val placeOrder: PlaceOrder,
-    private val getOrder: GetOrder
+    private val getOrder: GetOrder,
+    private val getDepth: GetDepth
 ) {
     fun start() {
         embeddedServer(CIO, port = 3000) {
@@ -30,7 +32,7 @@ class KtorAdapter(
             }
             routing {
                 accountRoutes(signup, deposit, withdraw, getAccount)
-                orderRoutes(placeOrder, getOrder)
+                orderRoutes(placeOrder, getOrder, getDepth)
             }
         }.start(wait = true)
     }

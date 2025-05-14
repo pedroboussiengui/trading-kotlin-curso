@@ -6,6 +6,7 @@ import org.example.domain.Order
 
 interface OrderRepository {
     fun saveOrder(order: Order)
+    fun updateOrder(order: Order)
     fun getOrderById(orderId: String): Order?
     fun getOrderByMarketIdAndStatus(marketId: String, status: String): List<Order>
     fun deleteAll()
@@ -15,7 +16,7 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
 
     override fun saveOrder(order: Order) {
         session.run(
-            queryOf("INSERT INTO order_tb (order_id, market_id, account_id, side, quantity, price, status, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            queryOf("INSERT INTO order_tb (order_id, market_id, account_id, side, quantity, price, status, timestamp, fill_quantity, fill_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 order.orderId,
                 order.marketId,
                 order.accountId,
@@ -23,7 +24,20 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                 order.quantity,
                 order.price,
                 order.status,
-                order.timestamp
+                order.timestamp,
+                order.fillQuantity,
+                order.price
+            ).asUpdate
+        )
+    }
+
+    override fun updateOrder(order: Order) {
+        session.run(
+            queryOf("UPDATE order_tb SET fill_quantity = ?, fill_price = ?, status = ? WHERE order_id = ?",
+                order.fillQuantity,
+                order.fillPrice,
+                order.status,
+                order.orderId
             ).asUpdate
         )
     }
@@ -40,7 +54,9 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                     row.int("quantity"),
                     row.int("price"),
                     row.string("status"),
-                    row.string("timestamp")
+                    row.string("timestamp"),
+                    row.int("fill_quantity"),
+                    row.int("fill_price")
                 )
             }.asSingle
         )
@@ -59,7 +75,9 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                     row.int("quantity"),
                     row.int("price"),
                     row.string("status"),
-                    row.string("timestamp")
+                    row.string("timestamp"),
+                    row.int("fill_quantity"),
+                    row.int("fill_price")
                 )
             }.asList
         )

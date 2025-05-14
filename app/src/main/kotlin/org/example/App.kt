@@ -3,6 +3,7 @@ package org.example
 import kotliquery.sessionOf
 import org.example.application.usecase.Deposit
 import org.example.application.usecase.GetAccount
+import org.example.application.usecase.GetDepth
 import org.example.application.usecase.GetOrder
 import org.example.application.usecase.PlaceOrder
 import org.example.application.usecase.SignUp
@@ -29,6 +30,7 @@ fun main() {
     val getAccount = GetAccount(accountRepository)
     val placeOrder = PlaceOrder(orderRepository)
     val getOrder = GetOrder(orderRepository)
+    val getDepth = GetDepth(orderRepository)
 
     KtorAdapter(
         signup,
@@ -36,6 +38,7 @@ fun main() {
         withdraw,
         getAccount,
         placeOrder,
-        getOrder
+        getOrder,
+        getDepth
     ).start()
 }

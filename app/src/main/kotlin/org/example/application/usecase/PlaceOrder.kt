@@ -8,7 +8,7 @@ class PlaceOrder(
     val orderRepository: OrderRepository
 ) {
     fun execute(input: OrderInput): OrderOutput {
-        val order = Order.Companion.create(
+        val order = Order.create(
             input.marketId,
             input.accountId,
             input.side,
@@ -16,6 +16,8 @@ class PlaceOrder(
             input.price
         )
         orderRepository.saveOrder(order)
+        val executeOrder = ExecuteOrder(orderRepository)
+        executeOrder.execute(input.marketId)
         return OrderOutput(order.orderId)
     }
 }

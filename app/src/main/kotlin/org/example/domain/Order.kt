@@ -1,17 +1,19 @@
 package org.example.domain
 
-import java.time.LocalDate
-import java.util.UUID
+import java.time.LocalDateTime
+import java.util.*
 
-class Order(
+data class Order(
     val orderId: String,
     val marketId: String,
     val accountId: String,
     val side: String,
     val quantity: Int,
     val price: Int,
-    val status: String,
-    val timestamp: String
+    var status: String,
+    val timestamp: String,
+    var fillQuantity: Int = 0,
+    var fillPrice: Int = 0
 ) {
     companion object {
         fun create(
@@ -23,8 +25,10 @@ class Order(
         ): Order {
             val orderId = UUID.randomUUID().toString()
             val status = "open"
-            val timestamp = LocalDate.now().toString()
-            return Order(orderId, marketId, accountId, side, quantity, price, status, timestamp)
+            val timestamp = LocalDateTime.now().toString()
+            val fillQuantity = 0
+            val fillPrice = 0
+            return Order(orderId, marketId, accountId, side, quantity, price, status, timestamp, fillQuantity, fillPrice)
         }
     }
 }
