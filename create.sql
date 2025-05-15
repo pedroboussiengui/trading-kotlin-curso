@@ -25,3 +25,14 @@ CREATE TABLE order_tb (
 	status TEXT,
 	timestamp TEXT
 );
+
+CREATE TABLE trade (
+    trade_id TEXT PRIMARY KEY,
+    market_id TEXT,
+    buy_order_id TEXT,
+    sell_order_id TEXT,
+    side TEXT,
+    quantity REAL,
+    price REAL,
+    timestamp TEXT
+);

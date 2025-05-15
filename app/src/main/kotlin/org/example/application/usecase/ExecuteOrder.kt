@@ -1,11 +1,14 @@
 package org.example.application.usecase
 
 import org.example.domain.Order
+import org.example.domain.Trade
 import org.example.infra.repository.OrderRepository
+import org.example.infra.repository.TradeRepository
 import java.time.LocalDateTime
 
 class ExecuteOrder(
-    val orderRepository: OrderRepository
+    val orderRepository: OrderRepository,
+    val tradeRepository: TradeRepository
 ) {
     fun execute(marketId: String) {
         // pega todas as ordens abertas
@@ -40,6 +43,15 @@ class ExecuteOrder(
 
             orderRepository.updateOrder(highestBuy)
             orderRepository.updateOrder(lowestSell)
+            val trade = Trade.create(
+                marketId,
+                highestBuy.orderId,
+                lowestSell.orderId,
+                tradeSide,
+                fillQuantity,
+                fillPrice
+            )
+            tradeRepository.saveTrade(trade)
         }
     }
 

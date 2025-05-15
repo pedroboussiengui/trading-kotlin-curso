@@ -30,10 +30,12 @@ import org.example.application.usecase.DepositInput
 import org.example.application.usecase.GetAccountOutput
 import org.example.application.usecase.GetDepthOutput
 import org.example.application.usecase.GetOrderOutput
+import org.example.application.usecase.GetTradesOutput
 import org.example.application.usecase.OrderInput
 import org.example.application.usecase.OrderOutput
 import org.example.application.usecase.SignupOutput
 import org.example.application.usecase.WithDrawInput
+import org.example.domain.Trade
 import org.example.infra.http.routes.ErrorResponse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -360,6 +362,12 @@ class AppTest {
         Assertions.assertEquals(1, messages[0].sells.size)
         Assertions.assertEquals(0, messages[1].buys.size)
         Assertions.assertEquals(0, messages[1].sells.size)
+
+        val responseGetTrades: HttpResponse = client.get("http://localhost:3000/markets/trades") {
+            url { parameters.append("marketId", marketId) }
+        }
+        val outputGetTrades = responseGetTrades.body<List<GetTradesOutput>>()
+        Assertions.assertEquals(1, outputGetTrades.size)
 
         job.cancelAndJoin()
     }

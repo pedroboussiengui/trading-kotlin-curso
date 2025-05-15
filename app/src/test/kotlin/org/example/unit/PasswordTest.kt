@@ -1,20 +1,19 @@
 package org.example.unit
 
-import org.example.domain.isValidPassword
+import org.example.domain.Password
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 @DisplayName("Password validation")
-class ValidatePasswordTest {
+class PasswordTest {
 
-    @Test
-    fun `should validate a password`() {
-        val password = "asdQWE123"
-        val isvalid = isValidPassword(password)
-        Assertions.assertTrue(isvalid)
+    @ParameterizedTest(name = "Deve validar a senha {0}")
+    @ValueSource(strings = ["asdQWE123"])
+    fun `should validate a password`(password: String) {
+        Assertions.assertNotNull(Password(password))
     }
 
     @ParameterizedTest(name = "Não deve validar a senha {0}")
@@ -26,7 +25,10 @@ class ValidatePasswordTest {
             "123456789"
         ])
     fun `should not validate a password`(password: String) {
-        val isvalid = isValidPassword(password)
-        Assertions.assertFalse(isvalid)
+        assertThrows<Exception> {
+            Password(password)
+        }.let { err ->
+            Assertions.assertEquals("Invalid password", err.message)
+        }
     }
 }

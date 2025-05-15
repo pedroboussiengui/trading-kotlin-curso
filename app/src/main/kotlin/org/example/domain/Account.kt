@@ -4,18 +4,26 @@ import java.util.UUID
 
 data class Account(
     val accountId: String,
-    val name: String,
-    val email: String,
-    val document: String,
-    val password: String
+    private val nameInput: String,
+    private val emailInput: String,
+    private val documentInput: String,
+    private val passwordInput: String
 ) {
-
     init {
-        if (!isValidName(name)) { throw Exception("Invalid name") }
-        if (!this.isValidEmail(email)) { throw Exception("Invalid email") }
-        if (!isValidPassword(password)) { throw Exception("Invalid password") }
-        if (!validateCpf(document)) { throw Exception("Invalid document") }
+        Name(nameInput)
+        Email(emailInput)
+        Document(documentInput)
+        Password(passwordInput)
     }
+
+    val name: String
+        get() = Name(nameInput).getValue()
+    val email: String
+        get() = Email(emailInput).getValue()
+    val document: String
+        get() = Document(documentInput).getValue()
+    val password: String
+        get() = Password(passwordInput).getValue()
 
     companion object {
         fun create(
@@ -27,14 +35,5 @@ data class Account(
             val accountId = UUID.randomUUID().toString()
             return Account(accountId, name, email, document, password)
         }
-    }
-
-    private fun isValidName(name: String): Boolean {
-        return name.split(" ").size == 2
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        val emailRegex = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
-        return emailRegex.matches(email)
     }
 }

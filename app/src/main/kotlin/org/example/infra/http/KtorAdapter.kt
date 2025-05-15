@@ -10,6 +10,7 @@ import io.ktor.server.websocket.*
 import org.example.application.usecase.*
 import org.example.infra.http.routes.accountRoutes
 import org.example.infra.http.routes.orderRoutes
+import org.example.infra.http.routes.tradeRoutes
 import org.example.infra.http.websocket.WebSocketServer
 import org.example.infra.http.websocket.websocketRouter
 import java.time.Duration
@@ -22,10 +23,11 @@ class KtorAdapter(
     private val placeOrder: PlaceOrder,
     private val getOrder: GetOrder,
     private val getDepth: GetDepth,
+    private val getTrades: GetTrades,
     private val webSocketServer: WebSocketServer<DefaultWebSocketServerSession>
 ) {
-    fun start() {
-        embeddedServer(CIO, port = 3000) {
+    fun start(port: Int) {
+        embeddedServer(CIO, port = port) {
             install(ContentNegotiation) {
                 json()
             }
@@ -38,19 +40,8 @@ class KtorAdapter(
             routing {
                 accountRoutes(signup, deposit, withdraw, getAccount)
                 orderRoutes(placeOrder, getOrder, getDepth)
+                tradeRoutes(getTrades)
                 websocketRouter(webSocketServer)
-//                webSocket("/ws") {
-//                    println("new client")
-//                    webSocketServer.add(this)
-//                    try {
-//                        incoming.consumeEach {  }
-//                    } catch (e: Exception) {
-//                        println("Session error: ${e.message}")
-//                    } finally {
-//                        println("Removing session")
-//                        webSocketServer.remove(this)
-//                    }
-//                }
             }
         }.start(wait = true)
     }
