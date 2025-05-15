@@ -29,7 +29,7 @@ data class OrderInput(
     val accountId: String,
     val side: String,
     val quantity: Int,
-    val price: Int
+    val price: Double
 )
 
 @Serializable

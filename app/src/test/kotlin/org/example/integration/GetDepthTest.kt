@@ -48,7 +48,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94000
+            price = 94000.0
         )
         placeOrder.execute(inputPlaceOrder1)
 
@@ -57,7 +57,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94500
+            price = 94500.0
         )
         placeOrder.execute(inputPlaceOrder2)
 
@@ -66,7 +66,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94600
+            price = 94600.0
         )
         placeOrder.execute(inputPlaceOrder3)
 
@@ -101,7 +101,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94000
+            price = 94000.0
         )
         placeOrder.execute(inputPlaceOrder1)
 
@@ -110,7 +110,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94000
+            price = 94000.0
         )
         placeOrder.execute(inputPlaceOrder2)
 
@@ -119,7 +119,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94000
+            price = 94000.0
         )
         placeOrder.execute(inputPlaceOrder3)
 
@@ -148,7 +148,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94000
+            price = 94000.0
         )
         placeOrder.execute(inputPlaceOrder1)
 
@@ -157,7 +157,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94500
+            price = 94500.0
         )
         placeOrder.execute(inputPlaceOrder2)
 
@@ -166,7 +166,7 @@ class GetDepthTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94500
+            price = 94500.0
         )
         placeOrder.execute(inputPlaceOrder3)
 

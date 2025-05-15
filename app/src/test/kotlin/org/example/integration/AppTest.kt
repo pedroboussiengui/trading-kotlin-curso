@@ -270,7 +270,7 @@ class AppTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94000
+            price = 94000.0
         )
         val responsePlaceOrder: HttpResponse = client.post("http://localhost:3000/place_order") {
             contentType(ContentType.Application.Json)
@@ -318,7 +318,7 @@ class AppTest {
             accountId = outputSignup.accountId,
             side = "sell",
             quantity = 1,
-            price = 94000
+            price = 94000.0
         )
         val responsePlaceOrder1: HttpResponse = client.post("http://localhost:3000/place_order") {
             contentType(ContentType.Application.Json)
@@ -331,7 +331,7 @@ class AppTest {
             accountId = outputSignup.accountId,
             side = "buy",
             quantity = 1,
-            price = 94500
+            price = 94500.0
         )
         val responsePlaceOrder2: HttpResponse = client.post("http://localhost:3000/place_order") {
             contentType(ContentType.Application.Json)
@@ -370,5 +370,131 @@ class AppTest {
         Assertions.assertEquals(1, outputGetTrades.size)
 
         job.cancelAndJoin()
+    }
+
+    @Test
+    fun `deve criar varias ordens de compra e venda e executá-las`() = runBlocking {
+        val marketId = "BTC/USD${Random.nextDouble()}"
+        val inputSignup = AccountInput(
+            name = "John Doe",
+            email = "john.doe@gmail.com",
+            document = "97456321558",
+            password = "asdQWE123"
+        )
+        val responseSignup: HttpResponse = client.post("http://localhost:3000/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(inputSignup)
+        }
+        val outputSignup = responseSignup.body<SignupOutput>()
+
+        val inputPlaceOrder1 = OrderInput(
+            marketId = marketId,
+            accountId = outputSignup.accountId,
+            side = "sell",
+            quantity = 1,
+            price = 94000.0
+        )
+        client.post("http://localhost:3000/place_order") {
+            contentType(ContentType.Application.Json)
+            setBody(inputPlaceOrder1)
+        }
+
+        val inputPlaceOrder2 = OrderInput(
+            marketId = marketId,
+            accountId = outputSignup.accountId,
+            side = "sell",
+            quantity = 1,
+            price = 94000.0
+        )
+        client.post("http://localhost:3000/place_order") {
+            contentType(ContentType.Application.Json)
+            setBody(inputPlaceOrder2)
+        }
+
+        val inputPlaceOrder3 = OrderInput(
+            marketId = marketId,
+            accountId = outputSignup.accountId,
+            side = "buy",
+            quantity = 2,
+            price = 94500.0
+        )
+        client.post("http://localhost:3000/place_order") {
+            contentType(ContentType.Application.Json)
+            setBody(inputPlaceOrder3)
+        }
+
+        val responseGetDepth: HttpResponse = client.get("http://localhost:3000/depth") {
+            url { parameters.append("marketId", marketId) }
+        }
+        val outputGetDepth = responseGetDepth.body<GetDepthOutput>()
+        Assertions.assertEquals(0, outputGetDepth.sells.size)
+        Assertions.assertEquals(0, outputGetDepth.buys.size)
+    }
+
+    @Test
+    fun `deve criar varias ordens de compra e venda com preços diferentes e executá-las`() = runBlocking {
+        val marketId = "BTC/USD${Random.nextDouble()}"
+        val inputSignup = AccountInput(
+            name = "John Doe",
+            email = "john.doe@gmail.com",
+            document = "97456321558",
+            password = "asdQWE123"
+        )
+        val responseSignup: HttpResponse = client.post("http://localhost:3000/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(inputSignup)
+        }
+        val outputSignup = responseSignup.body<SignupOutput>()
+
+        val inputPlaceOrder1 = OrderInput(
+            marketId = marketId,
+            accountId = outputSignup.accountId,
+            side = "sell",
+            quantity = 1,
+            price = 94500.0
+        )
+        client.post("http://localhost:3000/place_order") {
+            contentType(ContentType.Application.Json)
+            setBody(inputPlaceOrder1)
+        }
+
+        val inputPlaceOrder2 = OrderInput(
+            marketId = marketId,
+            accountId = outputSignup.accountId,
+            side = "sell",
+            quantity = 1,
+            price = 94000.0
+        )
+        client.post("http://localhost:3000/place_order") {
+            contentType(ContentType.Application.Json)
+            setBody(inputPlaceOrder2)
+        }
+
+        val inputPlaceOrder3 = OrderInput(
+            marketId = marketId,
+            accountId = outputSignup.accountId,
+            side = "buy",
+            quantity = 2,
+            price = 94500.0
+        )
+        val outputPlaceOrder: HttpResponse = client.post("http://localhost:3000/place_order") {
+            contentType(ContentType.Application.Json)
+            setBody(inputPlaceOrder3)
+        }
+        val outputPlaceOrder3 = outputPlaceOrder.body<OrderOutput>()
+
+//        val responseGetDepth: HttpResponse = client.get("http://localhost:3000/depth") {
+//            url { parameters.append("marketId", marketId) }
+//        }
+//        val outputGetDepth = responseGetDepth.body<GetDepthOutput>()
+//        Assertions.assertEquals(0, outputGetDepth.sells.size)
+//        Assertions.assertEquals(0, outputGetDepth.buys.size)
+
+        val responseGetOrder3 = client.get("http://localhost:3000/orders/${outputPlaceOrder3.orderId}")
+        val outputGetOrder3 = responseGetOrder3.body<GetOrderOutput>()
+        println(outputGetOrder3)
+//        Assertions.assertEquals("closed", outputGetOrder3.status)
+//        Assertions.assertEquals(1, outputGetOrder3.fillQuantity)
+//        Assertions.assertEquals(94000, outputGetOrder3.fillPrice)
     }
 }

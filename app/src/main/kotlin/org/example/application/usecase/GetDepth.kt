@@ -27,5 +27,5 @@ data class GetDepthOutput(
     val sells: MutableList<Order>
 ) {
     @Serializable
-    data class Order(val quantity: Int, val price: Int)
+    data class Order(val quantity: Int, val price: Double)
 }

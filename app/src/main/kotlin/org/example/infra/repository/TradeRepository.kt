@@ -39,7 +39,7 @@ class TradeRepositoryDatabase(private val session: Session) : TradeRepository {
                     row.string("sell_order_id"),
                     row.string("side"),
                     row.int("quantity"),
-                    row.int("price"),
+                    row.double("price"),
                     row.string("timestamp"),
                 )
             }.asList

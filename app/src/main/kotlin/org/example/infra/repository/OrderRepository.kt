@@ -52,11 +52,11 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                     row.string("account_id"),
                     row.string("side"),
                     row.int("quantity"),
-                    row.int("price"),
+                    row.double("price"),
                     row.string("status"),
                     row.string("timestamp"),
                     row.int("fill_quantity"),
-                    row.int("fill_price")
+                    row.double("fill_price")
                 )
             }.asSingle
         )
@@ -73,11 +73,11 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                     row.string("account_id"),
                     row.string("side"),
                     row.int("quantity"),
-                    row.int("price"),
+                    row.double("price"),
                     row.string("status"),
                     row.string("timestamp"),
                     row.int("fill_quantity"),
-                    row.int("fill_price")
+                    row.double("fill_price")
                 )
             }.asList
         )

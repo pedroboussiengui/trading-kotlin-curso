@@ -30,6 +30,6 @@ data class GetTradesOutput(
     val sellOrderId: String,
     val side: String,
     val quantity: Int,
-    val price: Int,
+    val price: Double,
     val timestamp: String
 )

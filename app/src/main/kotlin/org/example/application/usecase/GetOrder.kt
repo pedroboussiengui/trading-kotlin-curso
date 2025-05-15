@@ -33,9 +33,9 @@ data class GetOrderOutput(
     val accountId: String,
     val side: String,
     val quantity: Int,
-    val price: Int,
+    val price: Double,
     val status: String,
     val timestamp: String,
     val fillQuantity: Int,
-    val fillPrice: Int
+    val fillPrice: Double
 )

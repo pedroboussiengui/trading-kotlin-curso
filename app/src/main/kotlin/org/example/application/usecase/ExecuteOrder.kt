@@ -11,36 +11,28 @@ class ExecuteOrder(
     val tradeRepository: TradeRepository
 ) {
     fun execute(marketId: String) {
-        // pega todas as ordens abertas
-        val orders = orderRepository.getOrderByMarketIdAndStatus(marketId, "open")
-        // pega a mais alta de compra
-        val highestBuy = getHighestBuy(orders)
-        // pega a mais baixa de venda
-        val lowestSell = getLowestSell(orders)
-
-        if (highestBuy != null && lowestSell != null && highestBuy.price >= lowestSell.price) {
+        while (true) {
+            val orders = orderRepository.getOrderByMarketIdAndStatus(marketId, "open")
+            val highestBuy = getHighestBuy(orders)
+            val lowestSell = getLowestSell(orders)
+            highestBuy ?: return
+            lowestSell ?: return
+            if (highestBuy.price < lowestSell.price) return
             val fillQuantity = minOf(highestBuy.quantity, lowestSell.quantity)
-            val fillPrice = if (LocalDateTime.parse(highestBuy.timestamp).isAfter(LocalDateTime.parse(lowestSell.timestamp))) {
-                lowestSell.price
-            } else {
-                highestBuy.price
-            }
-            val tradeSide = if (LocalDateTime.parse(highestBuy.timestamp).isAfter(LocalDateTime.parse(lowestSell.timestamp)))
-            { "buy" } else { "sell" }
-
-            highestBuy.fillQuantity = fillQuantity
-            lowestSell.fillQuantity = fillQuantity
-            highestBuy.fillPrice = fillPrice
-            lowestSell.fillPrice = fillPrice
-
-            if (highestBuy.quantity == highestBuy.fillQuantity) {
-                highestBuy.status = "closed"
-            }
-
-            if (lowestSell.quantity == lowestSell.fillQuantity) {
-                lowestSell.status = "closed"
-            }
-
+            val fillPrice =
+                if (LocalDateTime.parse(highestBuy.timestamp).isAfter(LocalDateTime.parse(lowestSell.timestamp))) {
+                    lowestSell.price
+                } else {
+                    highestBuy.price
+                }
+            val tradeSide =
+                if (LocalDateTime.parse(highestBuy.timestamp).isAfter(LocalDateTime.parse(lowestSell.timestamp))) {
+                    "buy"
+                } else {
+                    "sell"
+                }
+            highestBuy.fill(fillQuantity, fillPrice)
+            lowestSell.fill(fillQuantity, fillPrice)
             orderRepository.updateOrder(highestBuy)
             orderRepository.updateOrder(lowestSell)
             val trade = Trade.create(
