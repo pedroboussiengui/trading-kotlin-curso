@@ -7,13 +7,11 @@ import io.ktor.server.engine.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import io.ktor.websocket.Frame
-import io.ktor.websocket.readText
-import kotlinx.coroutines.channels.consumeEach
 import org.example.application.usecase.*
-import org.example.infra.http.routes.ConnectionManager
 import org.example.infra.http.routes.accountRoutes
 import org.example.infra.http.routes.orderRoutes
+import org.example.infra.http.websocket.WebSocketServer
+import org.example.infra.http.websocket.websocketRouter
 import java.time.Duration
 
 class KtorAdapter(
@@ -24,7 +22,7 @@ class KtorAdapter(
     private val placeOrder: PlaceOrder,
     private val getOrder: GetOrder,
     private val getDepth: GetDepth,
-    private val connectionManager: ConnectionManager
+    private val webSocketServer: WebSocketServer<DefaultWebSocketServerSession>
 ) {
     fun start() {
         embeddedServer(CIO, port = 3000) {
@@ -40,18 +38,19 @@ class KtorAdapter(
             routing {
                 accountRoutes(signup, deposit, withdraw, getAccount)
                 orderRoutes(placeOrder, getOrder, getDepth)
-                webSocket("/ws") {
-                    println("new client")
-                    connectionManager.add(this)
-                    try {
-                        incoming.consumeEach {  }
-                    } catch (e: Exception) {
-                        println("Session error: ${e.message}")
-                    } finally {
-                        println("Removing session")
-                        connectionManager.remove(this)
-                    }
-                }
+                websocketRouter(webSocketServer)
+//                webSocket("/ws") {
+//                    println("new client")
+//                    webSocketServer.add(this)
+//                    try {
+//                        incoming.consumeEach {  }
+//                    } catch (e: Exception) {
+//                        println("Session error: ${e.message}")
+//                    } finally {
+//                        println("Removing session")
+//                        webSocketServer.remove(this)
+//                    }
+//                }
             }
         }.start(wait = true)
     }

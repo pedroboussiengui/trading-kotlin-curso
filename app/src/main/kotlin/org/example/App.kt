@@ -1,20 +1,17 @@
 package org.example
 
-import io.ktor.server.websocket.DefaultWebSocketServerSession
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import kotliquery.sessionOf
-import org.example.application.usecase.Deposit
-import org.example.application.usecase.GetAccount
-import org.example.application.usecase.GetDepth
-import org.example.application.usecase.GetOrder
-import org.example.application.usecase.PlaceOrder
-import org.example.application.usecase.SignUp
-import org.example.application.usecase.WithDraw
+import org.example.application.handler.OrderHandler
+import org.example.application.usecase.*
 import org.example.infra.http.KtorAdapter
-import org.example.infra.http.routes.ConnectionManager
+//import org.example.infra.http.websocket.ConnectionManager
+import org.example.infra.http.websocket.KtorWebSockerServer
+import org.example.infra.mediator.Mediator
 import org.example.infra.repository.AccountRepositoryDatabase
 import org.example.infra.repository.OrderRepositoryDatabase
 import org.sqlite.SQLiteDataSource
-import java.util.Collections
 import javax.sql.DataSource
 
 fun main() {
@@ -23,21 +20,23 @@ fun main() {
         url = "jdbc:sqlite:database.db"
     }
     val session = sessionOf(dataSource)
-
-//    val clients = Collections.synchronizedSet<DefaultWebSocketServerSession>(LinkedHashSet())
-
-    val connectionManager = ConnectionManager()
+    val webSockerServer = KtorWebSockerServer()
 
     val accountRepository = AccountRepositoryDatabase(session)
     val orderRepository = OrderRepositoryDatabase(session)
+
+    val mediator = Mediator()
 
     val signup = SignUp(accountRepository)
     val deposit = Deposit(accountRepository)
     val withdraw = WithDraw(accountRepository)
     val getAccount = GetAccount(accountRepository)
-    val placeOrder = PlaceOrder(orderRepository, connectionManager)
+    val placeOrder = PlaceOrder(orderRepository, mediator)
+    val executeOrder = ExecuteOrder(orderRepository)
     val getOrder = GetOrder(orderRepository)
     val getDepth = GetDepth(orderRepository)
+
+    OrderHandler.config(mediator, webSockerServer, executeOrder, getDepth)
 
     KtorAdapter(
         signup,
@@ -47,6 +46,6 @@ fun main() {
         placeOrder,
         getOrder,
         getDepth,
-        connectionManager
+        webSockerServer
     ).start()
 }
