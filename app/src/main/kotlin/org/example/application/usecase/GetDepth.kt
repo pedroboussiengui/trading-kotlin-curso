@@ -29,10 +29,3 @@ data class GetDepthOutput(
     @Serializable
     data class Order(val quantity: Int, val price: Int)
 }
-
-//        if (order.side == "buy") {
-//            output.buys.add(GetDepthOutput.Order(order.quantity, order.price))
-//        }
-//        if (order.side == "sell") {
-//            output.sells.add(GetDepthOutput.Order(order.quantity, order.price))
-//        }

@@ -4,11 +4,26 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.websocket.Frame
+import io.ktor.websocket.WebSocketSession
+import io.ktor.websocket.close
+import io.ktor.websocket.readBytes
+import io.ktor.websocket.readText
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import org.example.application.usecase.AccountInput
 import org.example.application.usecase.DepositInput
@@ -20,7 +35,9 @@ import org.example.application.usecase.OrderOutput
 import org.example.application.usecase.SignupOutput
 import org.example.application.usecase.WithDrawInput
 import org.example.infra.http.routes.ErrorResponse
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
@@ -29,8 +46,32 @@ class AppTest {
         install(ContentNegotiation.Plugin) {
             json(Json { ignoreUnknownKeys = true })
         }
+        install(WebSockets)
         expectSuccess = false // semelhante ao validateStatus = () => true
     }
+
+//    private lateinit var websocketSession: WebSocketSession
+
+//    private var messages = mutableListOf<GetDepthOutput>()
+    private lateinit var job: Job
+
+//    @BeforeEach
+//    fun setup() = runBlocking {
+//        job = launch {
+//            client.webSocket("ws://localhost:3000/ws") {
+//                println("Oi estou no client")
+//                for (frame in incoming) {
+//                    println("chegou algo!")
+//                    if (frame is Frame.Text) {
+//                        println(frame.readText())
+//                        val recv = Json.decodeFromString<GetDepthOutput>(frame.readText())
+//                        messages.add(recv)
+//                    }
+//                }
+//                println("fim")
+//            }
+//        }
+//    }
 
     @Test
     fun `deve criar um conta válida`() = runBlocking {
@@ -246,6 +287,20 @@ class AppTest {
 
     @Test
     fun `deve criar ordens de compra e venda e executá-las`() = runBlocking {
+        val messages = mutableListOf<GetDepthOutput>()
+//        val receivedMessage = CompletableDeferred<GetDepthOutput>()
+
+        job = launch {
+            client.webSocket("ws://localhost:3000/ws") {
+                for (frame in incoming) {
+                    if (frame is Frame.Text) {
+                        val recv = Json.decodeFromString<GetDepthOutput>(frame.readText())
+                        messages.add(recv)
+                    }
+                }
+            }
+        }
+
         val marketId = "BTC/USD${Random.nextDouble()}"
         val inputSignup = AccountInput(
             name = "John Doe",
@@ -276,7 +331,7 @@ class AppTest {
             marketId = marketId,
             accountId = outputSignup.accountId,
             side = "buy",
-            quantity = 1,
+            quantity = 2,
             price = 94500
         )
         val responsePlaceOrder2: HttpResponse = client.post("http://localhost:3000/place_order") {
@@ -293,7 +348,7 @@ class AppTest {
 
         val responseGetOrder2 = client.get("http://localhost:3000/orders/${outputPlaceOrder2.orderId}")
         val outputGetOrder2 = responseGetOrder2.body<GetOrderOutput>()
-        Assertions.assertEquals("closed", outputGetOrder2.status)
+        Assertions.assertEquals("open", outputGetOrder2.status)
         Assertions.assertEquals(1, outputGetOrder2.fillQuantity)
         Assertions.assertEquals(94000, outputGetOrder2.fillPrice)
 
@@ -302,6 +357,84 @@ class AppTest {
         }
         val outputGetDepth = responseGetDepth.body<GetDepthOutput>()
         Assertions.assertEquals(0, outputGetDepth.sells.size)
-        Assertions.assertEquals(0, outputGetDepth.buys.size)
+        Assertions.assertEquals(1, outputGetDepth.buys.size)
+
+        // Espera a resposta via WebSocket por até 3 segundos
+//        val received = withTimeoutOrNull(3000) {
+//            receivedMessage.await()
+//        }
+
+//        println("Mensagem recebida no teste: $received")
+        println(messages)
+
+        job.cancelAndJoin()
     }
+
+//    @Test
+//    fun `deve criar ordens de compra e venda e executá-las 2`() = runBlocking {
+//        val messages = mutableListOf<GetDepthOutput>()
+//        val receivedMessage = CompletableDeferred<GetDepthOutput>()
+//
+//        job = launch {
+//            client.webSocket("ws://localhost:3000/ws") {
+//                println("Client conectado ao WebSocket")
+//                try {
+//                    for (frame in incoming) {
+//                        if (frame is Frame.Text) {
+//                            val text = frame.readText()
+//                            println("Mensagem recebida: $text")
+//                            val recv = Json.decodeFromString<GetDepthOutput>(text)
+//                            messages.add(recv)
+//                            receivedMessage.complete(recv) // libera o teste
+//                        }
+//                    }
+//                } catch (e: Exception) {
+//                    println("Erro no WebSocket: ${e.message}")
+//                }
+//            }
+//        }
+//
+//        println("Iniciando o teste")
+//
+//        val marketId = "BTC/USD${Random.nextDouble()}"
+//        val inputSignup = AccountInput(
+//            name = "John Doe",
+//            email = "john.doe@gmail.com",
+//            document = "97456321558",
+//            password = "asdQWE123"
+//        )
+//        val responseSignup: HttpResponse = client.post("http://localhost:3000/signup") {
+//            contentType(ContentType.Application.Json)
+//            setBody(inputSignup)
+//        }
+//        val outputSignup = responseSignup.body<SignupOutput>()
+//
+//        val inputPlaceOrder1 = OrderInput(
+//            marketId = marketId,
+//            accountId = outputSignup.accountId,
+//            side = "sell",
+//            quantity = 1,
+//            price = 94000
+//        )
+//        val responsePlaceOrder1: HttpResponse = client.post("http://localhost:3000/place_order") {
+//            contentType(ContentType.Application.Json)
+//            setBody(inputPlaceOrder1)
+//        }
+//        val outputPlaceOrder1: OrderOutput = responsePlaceOrder1.body()
+//
+//        // Espera a resposta via WebSocket por até 3 segundos
+//        val received = withTimeoutOrNull(3000) {
+//            receivedMessage.await()
+//        }
+//
+//        println("Mensagem recebida no teste: $received")
+//        println(messages)
+//
+//        job.cancelAndJoin()
+//    }
+
+//    @AfterEach
+//    fun tearDown() {
+//        job.cancel()
+//    }
 }

@@ -40,10 +40,12 @@ dependencies {
     // Ktor server com CIO engine
     implementation("io.ktor:ktor-server-core:${ktorVersion}")
     implementation("io.ktor:ktor-server-cio:${ktorVersion}")
+    implementation("io.ktor:ktor-server-websockets:${ktorVersion}")
 
     // ktor client
     implementation("io.ktor:ktor-client-core:${ktorVersion}")
     implementation("io.ktor:ktor-client-cio:${ktorVersion}") // engine
+    implementation("io.ktor:ktor-client-websockets:${ktorVersion}")
 
     // ktor serialization e content negociation
     implementation("io.ktor:ktor-client-content-negotiation:${ktorVersion}")

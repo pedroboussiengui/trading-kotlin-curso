@@ -1,7 +1,9 @@
 package org.example.integration
 
+import kotlinx.coroutines.runBlocking
 import kotliquery.sessionOf
 import org.example.application.usecase.*
+import org.example.infra.http.routes.ConnectionManager
 import org.example.infra.repository.AccountRepositoryDatabase
 import org.example.infra.repository.OrderRepositoryDatabase
 import org.junit.jupiter.api.Assertions
@@ -26,14 +28,15 @@ class GetDepthTest {
         val orderRepository = OrderRepositoryDatabase(session)
         orderRepository.deleteAll()
         val accountRepository = AccountRepositoryDatabase(session)
-        placeOrder = PlaceOrder(orderRepository)
+        val connectionManager = ConnectionManager()
+        placeOrder = PlaceOrder(orderRepository, connectionManager)
         signup = SignUp(accountRepository)
         getDepth = GetDepth(orderRepository)
         marketId = "BTC/USD"
     }
 
     @Test
-    fun `deve retornar o depth após o a realização de ordens de compra e venda`() {
+    fun `deve retornar o depth após o a realização de ordens de compra e venda`() = runBlocking {
         val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
@@ -86,7 +89,7 @@ class GetDepthTest {
     }
 
     @Test
-    fun `deve retornar o depth após o a realização de ordens de compra e venda sem precision mas com valores iguais`() {
+    fun `deve retornar o depth após o a realização de ordens de compra e venda sem precision mas com valores iguais`() = runBlocking {
         val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
@@ -133,7 +136,7 @@ class GetDepthTest {
     }
 
     @Test
-    fun `deve retornar o depth após o a realização de ordens de compra e venda com precision de 3 casas`() {
+    fun `deve retornar o depth após o a realização de ordens de compra e venda com precision de 3 casas`() = runBlocking {
         val inputSignup = AccountInput(
             name = "John Doe",
             email = "john.doe@gmail.com",
