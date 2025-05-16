@@ -19,7 +19,7 @@ class GetOrder(
             order.quantity,
             order.price,
             order.status,
-            order.timestamp,
+            order.timestamp.toString(),
             order.fillQuantity,
             order.fillPrice
         )

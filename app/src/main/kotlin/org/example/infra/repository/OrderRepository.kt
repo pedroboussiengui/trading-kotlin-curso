@@ -3,6 +3,7 @@ package org.example.infra.repository
 import kotliquery.Session
 import kotliquery.queryOf
 import org.example.domain.Order
+import java.time.LocalDateTime
 
 interface OrderRepository {
     fun saveOrder(order: Order)
@@ -24,7 +25,7 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                 order.quantity,
                 order.price,
                 order.status,
-                order.timestamp,
+                order.timestamp.toString(),
                 order.fillQuantity,
                 order.price
             ).asUpdate
@@ -54,7 +55,7 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                     row.int("quantity"),
                     row.double("price"),
                     row.string("status"),
-                    row.string("timestamp"),
+                    LocalDateTime.parse(row.string("timestamp")),
                     row.int("fill_quantity"),
                     row.double("fill_price")
                 )
@@ -75,7 +76,7 @@ class OrderRepositoryDatabase(private val session: Session) : OrderRepository {
                     row.int("quantity"),
                     row.double("price"),
                     row.string("status"),
-                    row.string("timestamp"),
+                    LocalDateTime.parse(row.string("timestamp")),
                     row.int("fill_quantity"),
                     row.double("fill_price")
                 )

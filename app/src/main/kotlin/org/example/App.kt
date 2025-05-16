@@ -1,5 +1,8 @@
 package org.example
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotliquery.sessionOf
 import org.example.application.handler.OrderHandler
 import org.example.application.usecase.*
@@ -36,7 +39,8 @@ fun main() {
     val getDepth = GetDepth(orderRepository)
     val getTrades = GetTrades(tradeRepository)
 
-    OrderHandler.config(mediator, webSockerServer, executeOrder, getDepth)
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    OrderHandler.config(mediator, webSockerServer, executeOrder, getDepth, scope)
 
     KtorAdapter(
         signup,

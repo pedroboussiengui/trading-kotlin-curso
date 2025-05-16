@@ -75,13 +75,13 @@ class GetDepthTest {
         Assertions.assertEquals(3, outputGetDepth.sells.size)
 
         Assertions.assertEquals(1, outputGetDepth.sells[0].quantity)
-        Assertions.assertEquals(94000, outputGetDepth.sells[0].price)
+        Assertions.assertEquals(94000.0, outputGetDepth.sells[0].price)
 
         Assertions.assertEquals(1, outputGetDepth.sells[1].quantity)
-        Assertions.assertEquals(94500, outputGetDepth.sells[1].price)
+        Assertions.assertEquals(94500.0, outputGetDepth.sells[1].price)
 
         Assertions.assertEquals(1, outputGetDepth.sells[2].quantity)
-        Assertions.assertEquals(94600, outputGetDepth.sells[2].price)
+        Assertions.assertEquals(94600.0, outputGetDepth.sells[2].price)
 
         Assertions.assertEquals(0, outputGetDepth.buys.size)
     }
@@ -128,7 +128,7 @@ class GetDepthTest {
         Assertions.assertEquals(1, outputGetDepth.sells.size)
 
         Assertions.assertEquals(3, outputGetDepth.sells[0].quantity)
-        Assertions.assertEquals(94000, outputGetDepth.sells[0].price)
+        Assertions.assertEquals(94000.0, outputGetDepth.sells[0].price)
 
         Assertions.assertEquals(0, outputGetDepth.buys.size)
     }
@@ -175,7 +175,7 @@ class GetDepthTest {
         Assertions.assertEquals(1, outputGetDepth.sells.size)
 
         Assertions.assertEquals(3, outputGetDepth.sells[0].quantity)
-        Assertions.assertEquals(94000, outputGetDepth.sells[0].price)
+        Assertions.assertEquals(94000.0, outputGetDepth.sells[0].price)
 
         Assertions.assertEquals(0, outputGetDepth.buys.size)
     }

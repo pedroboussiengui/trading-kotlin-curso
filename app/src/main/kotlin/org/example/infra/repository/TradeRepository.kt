@@ -3,6 +3,7 @@ package org.example.infra.repository
 import kotliquery.Session
 import kotliquery.queryOf
 import org.example.domain.Trade
+import java.time.LocalDateTime
 
 interface TradeRepository {
     fun saveTrade(trade: Trade)
@@ -24,7 +25,7 @@ class TradeRepositoryDatabase(private val session: Session) : TradeRepository {
                 trade.side,
                 trade.quantity,
                 trade.price,
-                trade.timestamp
+                trade.timestamp.toString()
             ).asUpdate
         )
     }
@@ -40,7 +41,7 @@ class TradeRepositoryDatabase(private val session: Session) : TradeRepository {
                     row.string("side"),
                     row.int("quantity"),
                     row.double("price"),
-                    row.string("timestamp"),
+                    LocalDateTime.parse(row.string("timestamp")),
                 )
             }.asList
         )

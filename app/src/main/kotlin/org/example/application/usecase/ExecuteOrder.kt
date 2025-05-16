@@ -4,7 +4,6 @@ import org.example.domain.Order
 import org.example.domain.Trade
 import org.example.infra.repository.OrderRepository
 import org.example.infra.repository.TradeRepository
-import java.time.LocalDateTime
 
 class ExecuteOrder(
     val orderRepository: OrderRepository,
@@ -20,17 +19,9 @@ class ExecuteOrder(
             if (highestBuy.price < lowestSell.price) return
             val fillQuantity = minOf(highestBuy.quantity, lowestSell.quantity)
             val fillPrice =
-                if (LocalDateTime.parse(highestBuy.timestamp).isAfter(LocalDateTime.parse(lowestSell.timestamp))) {
-                    lowestSell.price
-                } else {
-                    highestBuy.price
-                }
+                if (highestBuy.timestamp.isAfter(lowestSell.timestamp)) lowestSell.price else highestBuy.price
             val tradeSide =
-                if (LocalDateTime.parse(highestBuy.timestamp).isAfter(LocalDateTime.parse(lowestSell.timestamp))) {
-                    "buy"
-                } else {
-                    "sell"
-                }
+                if (highestBuy.timestamp.isAfter(lowestSell.timestamp)) "buy" else "sell"
             highestBuy.fill(fillQuantity, fillPrice)
             lowestSell.fill(fillQuantity, fillPrice)
             orderRepository.updateOrder(highestBuy)

@@ -16,7 +16,7 @@ class GetTrades(
                 side = it.side,
                 quantity = it.quantity,
                 price = it.price,
-                timestamp = it.timestamp
+                timestamp = it.timestamp.toString()
             )
         }
     }

@@ -115,40 +115,6 @@ class AppTest {
         Assertions.assertEquals("Invalid name", outputSignup.error)
     }
 
-//    @Test
-//    fun `não deve criar uma conta com email inválido`() = runBlocking {
-//        val inputSignup = Account(
-//            name = "John Doe",
-//            email = "john.doe",
-//            document = "97456321558",
-//            password = "asdQWE123"
-//        )
-//        val responseSignup: HttpResponse = client.post("http://localhost:3000/signup") {
-//            contentType(ContentType.Application.Json)
-//            setBody(inputSignup)
-//        }
-//        val outputSignup = responseSignup.body<ErrorResponse>()
-//        Assertions.assertEquals(HttpStatusCode.Companion.UnprocessableEntity, responseSignup.status)
-//        Assertions.assertEquals("Invalid email", outputSignup.error)
-//    }
-//
-//    @Test
-//    fun `não deve criar uma conta com senha inválido`() = runBlocking {
-//        val inputSignup = Account(
-//            name = "John Doe",
-//            email = "john.doe@gmail.com",
-//            document = "97456321558",
-//            password = "asdQWE"
-//        )
-//        val responseSignup: HttpResponse = client.post("http://localhost:3000/signup") {
-//            contentType(ContentType.Application.Json)
-//            setBody(inputSignup)
-//        }
-//        val outputSignup = responseSignup.body<ErrorResponse>()
-//        Assertions.assertEquals(HttpStatusCode.Companion.UnprocessableEntity, responseSignup.status)
-//        Assertions.assertEquals("Invalid password", outputSignup.error)
-//    }
-
     @Test
     fun `deve fazer um deposito`() = runBlocking {
         val inputSignup = AccountInput(
@@ -283,7 +249,7 @@ class AppTest {
         Assertions.assertEquals("BTC/USD", outputGetOrder.marketId)
         Assertions.assertEquals("sell", outputGetOrder.side)
         Assertions.assertEquals(1, outputGetOrder.quantity)
-        Assertions.assertEquals(94000, outputGetOrder.price)
+        Assertions.assertEquals(94000.0, outputGetOrder.price)
         Assertions.assertNotNull(outputGetOrder.timestamp)
     }
 
@@ -343,13 +309,13 @@ class AppTest {
         val outputGetOrder1 = responseGetOrder1.body<GetOrderOutput>()
         Assertions.assertEquals("closed", outputGetOrder1.status)
         Assertions.assertEquals(1, outputGetOrder1.fillQuantity)
-        Assertions.assertEquals(94000, outputGetOrder1.fillPrice)
+        Assertions.assertEquals(94000.0, outputGetOrder1.fillPrice)
 
         val responseGetOrder2 = client.get("http://localhost:3000/orders/${outputPlaceOrder2.orderId}")
         val outputGetOrder2 = responseGetOrder2.body<GetOrderOutput>()
         Assertions.assertEquals("closed", outputGetOrder2.status)
         Assertions.assertEquals(1, outputGetOrder2.fillQuantity)
-        Assertions.assertEquals(94000, outputGetOrder2.fillPrice)
+        Assertions.assertEquals(94000.0, outputGetOrder2.fillPrice)
 
         val responseGetDepth: HttpResponse = client.get("http://localhost:3000/depth") {
             url { parameters.append("marketId", marketId) }
@@ -483,18 +449,11 @@ class AppTest {
         }
         val outputPlaceOrder3 = outputPlaceOrder.body<OrderOutput>()
 
-//        val responseGetDepth: HttpResponse = client.get("http://localhost:3000/depth") {
-//            url { parameters.append("marketId", marketId) }
-//        }
-//        val outputGetDepth = responseGetDepth.body<GetDepthOutput>()
-//        Assertions.assertEquals(0, outputGetDepth.sells.size)
-//        Assertions.assertEquals(0, outputGetDepth.buys.size)
-
         val responseGetOrder3 = client.get("http://localhost:3000/orders/${outputPlaceOrder3.orderId}")
         val outputGetOrder3 = responseGetOrder3.body<GetOrderOutput>()
-        println(outputGetOrder3)
-//        Assertions.assertEquals("closed", outputGetOrder3.status)
-//        Assertions.assertEquals(1, outputGetOrder3.fillQuantity)
-//        Assertions.assertEquals(94000, outputGetOrder3.fillPrice)
+
+        Assertions.assertEquals("closed", outputGetOrder3.status)
+        Assertions.assertEquals(2, outputGetOrder3.fillQuantity)
+        Assertions.assertEquals(94250.0, outputGetOrder3.fillPrice)
     }
 }

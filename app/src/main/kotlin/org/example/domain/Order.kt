@@ -11,7 +11,7 @@ data class Order(
     val quantity: Int,
     val price: Double,
     var status: String,
-    val timestamp: String,
+    val timestamp: LocalDateTime,
     var fillQuantity: Int = 0,
     var fillPrice: Double = 0.0
 ) {
@@ -25,7 +25,7 @@ data class Order(
         ): Order {
             val orderId = UUID.randomUUID().toString()
             val status = "open"
-            val timestamp = LocalDateTime.now().toString()
+            val timestamp = LocalDateTime.now()
             val fillQuantity = 0
             val fillPrice = 0.0
             return Order(orderId, marketId, accountId, side, quantity, price, status, timestamp, fillQuantity, fillPrice)

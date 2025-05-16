@@ -11,7 +11,7 @@ class Trade(
     val side: String,
     val quantity: Int,
     val price: Double,
-    val timestamp: String
+    val timestamp: LocalDateTime
 ) {
     companion object {
         fun create(
@@ -23,7 +23,7 @@ class Trade(
             price: Double
         ): Trade {
             val tradeId = UUID.randomUUID().toString()
-            val timestamp = LocalDateTime.now().toString()
+            val timestamp = LocalDateTime.now()
             return Trade(tradeId, marketId, buyOrderId, sellOrderId, side, quantity, price, timestamp)
         }
     }
