@@ -10,7 +10,7 @@ class SignUp(
     fun execute(input: AccountInput): SignupOutput {
         val account = Account.Companion.create(input.name, input.email, input.document, input.password)
         accountRepository.saveAccount(account)
-        return SignupOutput(account.accountId)
+        return SignupOutput(account.accountId.toString())
     }
 }
 

@@ -1,31 +1,32 @@
 package org.example.domain
 
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 
 data class Order(
-    val orderId: String,
+    val orderId: UUID,
     val marketId: String,
-    val accountId: String,
+    val accountId: UUID,
     val side: String,
     val quantity: Int,
     val price: Double,
     var status: String,
-    val timestamp: LocalDateTime,
+    val timestamp: Instant,
     var fillQuantity: Int = 0,
     var fillPrice: Double = 0.0
 ) {
     companion object {
         fun create(
             marketId: String,
-            accountId: String,
+            accountId: UUID,
             side: String,
             quantity: Int,
             price: Double
         ): Order {
-            val orderId = UUID.randomUUID().toString()
+            val orderId = UUID.randomUUID()
             val status = "open"
-            val timestamp = LocalDateTime.now()
+            val timestamp = Instant.now()
             val fillQuantity = 0
             val fillPrice = 0.0
             return Order(orderId, marketId, accountId, side, quantity, price, status, timestamp, fillQuantity, fillPrice)

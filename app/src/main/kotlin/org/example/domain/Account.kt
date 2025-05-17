@@ -3,7 +3,7 @@ package org.example.domain
 import java.util.UUID
 
 data class Account(
-    val accountId: String,
+    val accountId: UUID,
     private val nameInput: String,
     private val emailInput: String,
     private val documentInput: String,
@@ -32,7 +32,7 @@ data class Account(
             document: String,
             password: String
         ): Account {
-            val accountId = UUID.randomUUID().toString()
+            val accountId = UUID.randomUUID()
             return Account(accountId, name, email, document, password)
         }
     }

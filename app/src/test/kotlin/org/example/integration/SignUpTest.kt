@@ -1,19 +1,19 @@
 package org.example.integration
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import kotliquery.sessionOf
 import org.example.application.usecase.AccountInput
 import org.example.infra.repository.AccountRepositoryDatabase
 import org.example.application.usecase.GetAccount
 import org.example.application.usecase.SignUp
 import org.example.application.usecase.SignupOutput
+import org.example.infra.database.PostgresDataSource
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.sqlite.SQLiteDataSource
-import javax.sql.DataSource
 
-// teste de integração no nivel mais baixo
 class SignUpTest {
 
     lateinit var signup: SignUp
@@ -21,15 +21,11 @@ class SignUpTest {
 
     @BeforeEach
     fun setup() {
-        val dataSource: DataSource = SQLiteDataSource().apply {
-            url = "jdbc:sqlite:database.db"
-        }
+        val dataSource = PostgresDataSource.dataSource
         val session = sessionOf(dataSource)
         val accountDAO = AccountRepositoryDatabase(session)
-//        val accountDAO = AccountDAOMemory()
         signup = SignUp(accountDAO)
         getAccount = GetAccount(accountDAO)
-
     }
 
     /**

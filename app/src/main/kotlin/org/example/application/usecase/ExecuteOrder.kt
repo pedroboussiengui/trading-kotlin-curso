@@ -18,10 +18,8 @@ class ExecuteOrder(
             lowestSell ?: return
             if (highestBuy.price < lowestSell.price) return
             val fillQuantity = minOf(highestBuy.quantity, lowestSell.quantity)
-            val fillPrice =
-                if (highestBuy.timestamp.isAfter(lowestSell.timestamp)) lowestSell.price else highestBuy.price
-            val tradeSide =
-                if (highestBuy.timestamp.isAfter(lowestSell.timestamp)) "buy" else "sell"
+            val fillPrice = if (highestBuy.timestamp.isAfter(lowestSell.timestamp)) lowestSell.price else highestBuy.price
+            val tradeSide = if (highestBuy.timestamp.isAfter(lowestSell.timestamp)) "buy" else "sell"
             highestBuy.fill(fillQuantity, fillPrice)
             lowestSell.fill(fillQuantity, fillPrice)
             orderRepository.updateOrder(highestBuy)

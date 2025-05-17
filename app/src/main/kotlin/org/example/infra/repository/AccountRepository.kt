@@ -4,6 +4,7 @@ import kotliquery.Session
 import kotliquery.queryOf
 import org.example.domain.Account
 import org.example.domain.AccountAsset
+import java.util.UUID
 
 interface AccountRepository {
     fun saveAccount(account: Account)
@@ -18,17 +19,17 @@ class AccountRepositoryDatabase(private val session: Session) : AccountRepositor
 
     override fun saveAccount(account: Account) {
         session.run(
-            queryOf("INSERT INTO account (account_id, name, email, document, password) VALUES (?, ?, ?, ?, ?)",
+            queryOf("INSERT INTO ccca.account (account_id, name, email, document, password) VALUES (?, ?, ?, ?, ?)",
                 account.accountId, account.name, account.email, account.document, account.password).asUpdate
         )
     }
 
     override fun getAccountById(accountId: String): Account? {
         val account = session.run(queryOf(
-            "SELECT * FROM account WHERE account_id = ?", accountId)
+            "SELECT * FROM ccca.account WHERE account_id = ?", UUID.fromString(accountId))
             .map { row ->
                 Account(
-                    row.string("account_id"),
+                    row.uuid("account_id"),
                     row.string("name"),
                     row.string("email"),
                     row.string("document"),
@@ -41,10 +42,10 @@ class AccountRepositoryDatabase(private val session: Session) : AccountRepositor
 
     override fun getAccountAssets(accountId: String): List<AccountAsset> {
         val assets = session.run(queryOf(
-            "SELECT * FROM account_asset WHERE account_id = ?", accountId)
+            "SELECT * FROM ccca.account_asset WHERE account_id = ?", UUID.fromString(accountId))
             .map { row ->
                 AccountAsset(
-                    row.string("account_id"),
+                    row.uuid("account_id"),
                     row.string("asset_id"),
                     row.int("quantity"),
                 )
@@ -55,10 +56,10 @@ class AccountRepositoryDatabase(private val session: Session) : AccountRepositor
 
     override fun getAccountAsset(accountId: String, assetId: String): AccountAsset {
         val accountAssetData = session.run(queryOf(
-            "SELECT * FROM account_asset WHERE account_id = ? and asset_id = ?", accountId, assetId)
+            "SELECT * FROM ccca.account_asset WHERE account_id = ? AND asset_id = ?", UUID.fromString(accountId), assetId)
             .map { row ->
                 AccountAsset(
-                    row.string("account_id"),
+                    row.uuid("account_id"),
                     row.string("asset_id"),
                     row.int("quantity"),
                 )
@@ -72,14 +73,14 @@ class AccountRepositoryDatabase(private val session: Session) : AccountRepositor
 
     override fun updateAccountAsset(accountAsset: AccountAsset) {
         session.run(
-            queryOf("UPDATE account_asset SET quantity = ? WHERE account_id = ? and asset_id = ?",
+            queryOf("UPDATE ccca.account_asset SET quantity = ? WHERE account_id = ? AND asset_id = ?",
                 accountAsset.getQuantity(), accountAsset.accountId, accountAsset.assetId).asUpdate
         )
     }
 
     override fun saveAccountAsset(accountAsset: AccountAsset) {
         session.run(
-            queryOf("INSERT INTO account_asset (account_id, asset_id, quantity) VALUES (?, ?, ?)",
+            queryOf("INSERT INTO ccca.account_asset (account_id, asset_id, quantity) VALUES (?, ?, ?)",
                 accountAsset.accountId, accountAsset.assetId, accountAsset.getQuantity()).asUpdate
         )
     }
@@ -95,7 +96,7 @@ class AccountDAOMemory : AccountRepository {
     }
 
     override fun getAccountById(accountId: String): Account? {
-        return accounts.find { it.accountId == accountId }
+        return accounts.find { it.accountId == UUID.fromString(accountId) }
     }
 
     override fun getAccountAssets(accountId: String): List<AccountAsset> {

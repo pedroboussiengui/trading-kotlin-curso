@@ -3,13 +3,12 @@ package org.example.integration
 import kotlinx.coroutines.runBlocking
 import kotliquery.sessionOf
 import org.example.application.usecase.*
+import org.example.infra.database.PostgresDataSource
 import org.example.infra.repository.AccountRepositoryDatabase
 import org.example.infra.repository.OrderRepositoryDatabase
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.sqlite.SQLiteDataSource
-import javax.sql.DataSource
 
 class GetDepthTest {
 
@@ -20,9 +19,7 @@ class GetDepthTest {
 
     @BeforeEach
     fun setup() {
-        val dataSource: DataSource = SQLiteDataSource().apply {
-            url = "jdbc:sqlite:database.db"
-        }
+        val dataSource = PostgresDataSource.dataSource
         val session = sessionOf(dataSource)
         val orderRepository = OrderRepositoryDatabase(session)
         orderRepository.deleteAll()

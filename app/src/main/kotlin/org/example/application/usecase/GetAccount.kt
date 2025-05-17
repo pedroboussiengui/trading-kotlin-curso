@@ -13,7 +13,7 @@ class GetAccount(
         }
         val assets = accountRepository.getAccountAssets(accountId)
         val output = GetAccountOutput(
-            account.accountId,
+            account.accountId.toString(),
             account.name,
             account.email,
             account.document,

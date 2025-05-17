@@ -41,6 +41,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core:${ktorVersion}")
     implementation("io.ktor:ktor-server-cio:${ktorVersion}")
     implementation("io.ktor:ktor-server-websockets:${ktorVersion}")
+    implementation("io.ktor:ktor-server-status-pages:${ktorVersion}")
 
     // ktor client
     implementation("io.ktor:ktor-client-core:${ktorVersion}")
@@ -60,9 +61,15 @@ dependencies {
     // sqlite3
     implementation("org.xerial:sqlite-jdbc:3.48.0.0")
 
+    // postgres
+    implementation("org.postgresql:postgresql:42.7.5")
+
     // database connection
 //    implementation("org.jdbi:jdbi3-core:3.48.0")
     implementation("com.github.seratch:kotliquery:1.9.1")
+
+    // connection pool
+    implementation("com.zaxxer:HikariCP:6.2.1")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

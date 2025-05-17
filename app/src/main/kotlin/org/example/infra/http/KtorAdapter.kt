@@ -1,10 +1,14 @@
 package org.example.infra.http
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.uri
+import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import org.example.application.usecase.*
@@ -14,6 +18,7 @@ import org.example.infra.http.routes.tradeRoutes
 import org.example.infra.http.websocket.WebSocketServer
 import org.example.infra.http.websocket.websocketRouter
 import java.time.Duration
+import java.time.Instant
 
 class KtorAdapter(
     private val signup: SignUp,
@@ -36,6 +41,9 @@ class KtorAdapter(
                 timeout = Duration.ofSeconds(30)
                 maxFrameSize = Long.MAX_VALUE
                 masking = false
+            }
+            install(StatusPages) {
+                // explorar criar um arquivo de exceções
             }
             routing {
                 accountRoutes(signup, deposit, withdraw, getAccount)

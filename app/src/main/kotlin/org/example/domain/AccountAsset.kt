@@ -1,7 +1,9 @@
 package org.example.domain
 
+import java.util.UUID
+
 class AccountAsset(
-    val accountId: String,
+    val accountId: UUID,
     val assetId: String,
     private var quantity: Int
 ) {

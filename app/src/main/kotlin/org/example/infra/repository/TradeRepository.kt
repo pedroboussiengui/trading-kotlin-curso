@@ -3,21 +3,29 @@ package org.example.infra.repository
 import kotliquery.Session
 import kotliquery.queryOf
 import org.example.domain.Trade
-import java.time.LocalDateTime
 
 interface TradeRepository {
     fun saveTrade(trade: Trade)
     fun getTradesByMarketId(marketId: String): List<Trade>
 }
 
-const val INSERT_TRADE_QUERY = "INSERT INTO trade (trade_id, market_id, buy_order_id, sell_order_id, side, quantity, price, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-const val SELECT_TRADES_BY_MARKET_ID = "SELECT * FROM trade WHERE market_id = ?"
+val InsertTradeQuery = """
+    INSERT INTO ccca.trade (
+        trade_id, market_id, buy_order_id, sell_order_id,
+        side, quantity, price, timestamp
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+""".trimIndent()
+
+val SelectTradesByMarketId = """
+    SELECT * FROM ccca.trade 
+    WHERE market_id = ?
+""".trimIndent()
 
 class TradeRepositoryDatabase(private val session: Session) : TradeRepository {
 
     override fun saveTrade(trade: Trade) {
         session.run(
-            queryOf(INSERT_TRADE_QUERY.trim(),
+            queryOf(InsertTradeQuery,
                 trade.tradeId,
                 trade.marketId,
                 trade.buyOrderId,
@@ -25,23 +33,23 @@ class TradeRepositoryDatabase(private val session: Session) : TradeRepository {
                 trade.side,
                 trade.quantity,
                 trade.price,
-                trade.timestamp.toString()
+                trade.timestamp
             ).asUpdate
         )
     }
 
     override fun getTradesByMarketId(marketId: String): List<Trade> {
-        return session.run(queryOf(SELECT_TRADES_BY_MARKET_ID, marketId)
+        return session.run(queryOf(SelectTradesByMarketId, marketId)
             .map { row ->
                 Trade(
-                    row.string("trade_id"),
+                    row.uuid("trade_id"),
                     row.string("market_id"),
-                    row.string("buy_order_id"),
-                    row.string("sell_order_id"),
+                    row.uuid("buy_order_id"),
+                    row.uuid("sell_order_id"),
                     row.string("side"),
                     row.int("quantity"),
                     row.double("price"),
-                    LocalDateTime.parse(row.string("timestamp")),
+                    row.instant("timestamp"),
                 )
             }.asList
         )

@@ -1,29 +1,29 @@
 package org.example.domain
 
-import java.time.LocalDateTime
-import java.util.UUID
+import java.time.Instant
+import java.util.*
 
 class Trade(
-    val tradeId: String,
+    val tradeId: UUID,
     val marketId: String,
-    val buyOrderId: String,
-    val sellOrderId: String,
+    val buyOrderId: UUID,
+    val sellOrderId: UUID,
     val side: String,
     val quantity: Int,
     val price: Double,
-    val timestamp: LocalDateTime
+    val timestamp: Instant
 ) {
     companion object {
         fun create(
             marketId: String,
-            buyOrderId: String,
-            sellOrderId: String,
+            buyOrderId: UUID,
+            sellOrderId: UUID,
             side: String,
             quantity: Int,
             price: Double
         ): Trade {
-            val tradeId = UUID.randomUUID().toString()
-            val timestamp = LocalDateTime.now()
+            val tradeId = UUID.randomUUID()
+            val timestamp = Instant.now()
             return Trade(tradeId, marketId, buyOrderId, sellOrderId, side, quantity, price, timestamp)
         }
     }

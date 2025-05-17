@@ -9,10 +9,10 @@ class GetTrades(
     fun execute(marketId: String): List<GetTradesOutput> {
         return tradeRepository.getTradesByMarketId(marketId).map {
             GetTradesOutput(
-                tradeId = it.tradeId,
+                tradeId = it.tradeId.toString(),
                 marketId = it.marketId,
-                buyOrderId = it.buyOrderId,
-                sellOrderId = it.sellOrderId,
+                buyOrderId = it.buyOrderId.toString(),
+                sellOrderId = it.sellOrderId.toString(),
                 side = it.side,
                 quantity = it.quantity,
                 price = it.price,

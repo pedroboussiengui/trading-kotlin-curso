@@ -41,7 +41,7 @@ fun Route.accountRoutes(
         } catch (e: Exception) {
             call.respond(
                 HttpStatusCode.UnprocessableEntity,
-                ErrorResponse(e.message!!)
+                mapOf("error" to e.message!!)
             )
         }
     }
@@ -71,8 +71,9 @@ fun Route.accountRoutes(
         } catch (e: Exception) {
             call.respond(
                 HttpStatusCode.NotFound,
-                e.message!!
+                mapOf("error" to e.message!!)
             )
         }
     }
 }
+

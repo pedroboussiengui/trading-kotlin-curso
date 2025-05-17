@@ -12,9 +12,9 @@ class GetOrder(
             throw Exception("Order not found")
         }
         return GetOrderOutput(
-            order.orderId,
+            order.orderId.toString(),
             order.marketId,
-            order.accountId,
+            order.accountId.toString(),
             order.side,
             order.quantity,
             order.price,
